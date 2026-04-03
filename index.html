@@ -6,30 +6,31 @@
 <title>Paschala Hub | eFootball Master</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; --manager-color: #00d2ff; }
-  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
+  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; }
+  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; overflow-x: hidden; }
   
   .container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
-  
-  /* Manager & Playstyle UI */
-  .manager-hub { background: linear-gradient(145deg, #16161d, #252530); border-left: 5px solid var(--manager-color); padding: 15px; margin: 10px; border-radius: 10px; }
-  .playstyle-badge { background: var(--manager-color); color: #000; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
+  .tab-content { display: none; animation: fadeIn 0.3s; }
+  .active-tab { display: block; }
 
-  /* Pitch & Player Styles */
+  /* FIX: Pitch Row Spacing */
   .pitch-area { 
     background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; 
-    padding: 15px; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
+    min-height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0;
+    background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px); background-size: 100% 40px;
   }
-  .position-row { display: flex; justify-content: center; gap: 6px; width: 100%; min-height: 70px; align-items: center; }
+  .position-row { display: flex; justify-content: center; gap: 10px; width: 100%; min-height: 80px; align-items: center; }
   
   .player-card { 
-    background: #fff; color: #000; border-radius: 4px; width: 52px; padding: 4px;
+    background: #fff; color: #000; border-radius: 4px; width: 60px; padding: 5px;
     text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-bottom: 3px solid var(--pos-bg);
   }
-  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.55rem; font-weight: bold; display: block; border-radius: 2px; }
-  .p-name { font-size: 0.6rem; font-weight: bold; white-space: nowrap; overflow: hidden; display: block; margin-top: 2px; }
+  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; border-radius: 2px; }
+  .p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; color: #111; }
+
+  /* G/A & Subs Section */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .stat-item { background: #252530; padding: 10px; border-radius: 8px; font-size: 0.8rem; border-left: 3px solid var(--accent); }
 
   input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
   .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
@@ -37,54 +38,60 @@
   .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #16161d; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 1000; }
   .nav-item { color: #888; text-align: center; font-size: 0.7rem; cursor: pointer; }
   .nav-item.active { color: var(--primary); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <body>
 
-<div class="manager-hub" id="managerDisplay">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <span style="font-weight:bold;">MANAGER HUB</span>
-    <span class="playstyle-badge" id="activeStyle">Select Style</span>
+<div id="squadTab" class="tab-content active-tab">
+  <div class="container" style="background: linear-gradient(to right, #16161d, #283593);">
+    <h3 style="margin:0;">Tactical Manager Hub</h3>
+    <p id="managerAdvice" style="font-size:0.8rem; color:var(--accent);">Select a formation to see the AI Advice...</p>
   </div>
-  <p id="managerRec" style="font-size:0.85rem; margin-top:8px; color:#bbb;">Pick your playstyle to see the best manager for your team.</p>
+
+  <div class="container">
+    <select id="formationInput" onchange="renderPitch()">
+      <option value="4-3-1-2">4-3-1-2 (Diamond - Best for G. Zeitzler)</option>
+      <option value="4-2-1-3">4-2-1-3 (Offensive - Best for Xabi Alonso)</option>
+      <option value="4-2-2-2">4-2-2-2 (Counter - Best for Capello)</option>
+    </select>
+    <div class="pitch-area" id="pitchLayout"></div>
+  </div>
+
+  <div class="container">
+    <h3>Register Player / Sub</h3>
+    <input id="playerName" placeholder="Player Name">
+    <div style="display:flex; gap:5px;">
+      <input id="goalsInput" type="number" placeholder="Goals" style="width:50%">
+      <input id="assistsInput" type="number" placeholder="Assists" style="width:50%">
+    </div>
+    <select id="playerPosition">
+      <option value="CF">CF</option><option value="SS">SS</option><option value="AMF">AMF</option>
+      <option value="LWF">LWF</option><option value="RWF">RWF</option><option value="CMF">CMF</option>
+      <option value="DMF">DMF</option><option value="CB">CB</option><option value="GK">GK</option>
+      <option value="SUB">SUB (Bench)</option>
+    </select>
+    <button class="btn-main" onclick="addPlayer()">ADD TO SQUAD</button>
+  </div>
+
+  <div class="container">
+    <h3>🔄 Bench & G/A Stats</h3>
+    <div id="subsDisplay" class="stats-grid"></div>
+  </div>
 </div>
 
-<div class="container">
-  <h3>1. Choose Your Meta</h3>
-  <select id="playstyleInput" onchange="updateManagerInfo()">
-    <option value="">-- Select Playstyle --</option>
-    <option value="Possession">Possession Game</option>
-    <option value="QuickCounter">Quick Counter</option>
-    <option value="LongBallCounter">Long Ball Counter</option>
-    <option value="OutWide">Out Wide</option>
-  </select>
-  
-  <select id="formationInput" onchange="renderPitch()">
-    <option value="4-3-1-2">4-3-1-2 (Diamond)</option>
-    <option value="4-2-1-3">4-2-1-3 (Offensive)</option>
-    <option value="4-2-2-2">4-2-2-2 (Standard)</option>
-  </select>
-</div>
-
-<div class="container">
-  <div class="pitch-area" id="pitchLayout"></div>
-</div>
-
-<div class="container">
-  <h3>2. Register Player</h3>
-  <input id="playerName" placeholder="Player Name">
-  <select id="playerPosition">
-    <option value="CF">CF</option><option value="SS">SS</option><option value="LWF">LWF</option><option value="RWF">RWF</option>
-    <option value="AMF">AMF</option><option value="LMF">LMF</option><option value="RMF">RMF</option><option value="CMF">CMF</option>
-    <option value="DMF">DMF</option><option value="LB">LB</option><option value="RB">RB</option><option value="CB">CB</option><option value="GK">GK</option>
-  </select>
-  <button class="btn-main" onclick="addPlayer()">ADD TO FIELD</button>
-  <button onclick="clearSquad()" style="width:100%; background:none; color:#ff4d4d; border:none; margin-top:15px; font-size:0.8rem;">Release All Players</button>
+<div id="moneyTab" class="tab-content">
+  <div class="container">
+    <h2>💸 Money Strategies</h2>
+    <input id="ideaInput" placeholder="Enter a profit idea...">
+    <button class="btn-main" onclick="saveIdea()">SHARE STRATEGY</button>
+  </div>
+  <div id="ideasDisplay"></div>
 </div>
 
 <nav class="bottom-nav">
-  <div class="nav-item active"><i class="fas fa-strategy"></i>Squad</div>
-  <div class="nav-item" onclick="alert('Money Feed is Live!')"><i class="fas fa-wallet"></i>Money</div>
+  <div class="nav-item active" onclick="switchTab('squadTab', this)"><i class="fas fa-tshirt"></i>Squad</div>
+  <div class="nav-item" onclick="switchTab('moneyTab', this)"><i class="fas fa-wallet"></i>Money</div>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -92,7 +99,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
   authDomain: "money-app-bac4c.firebaseapp.com",
@@ -105,52 +111,45 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function updateManagerInfo() {
-  const style = document.getElementById("playstyleInput").value;
-  const badge = document.getElementById("activeStyle");
-  const rec = document.getElementById("managerRec");
-
-  const managerData = {
-    "Possession": { name: "Xabi Alonso", bonus: "+1 Ball Control", boost: "88" },
-    "QuickCounter": { name: "G. Zeitzler (Klopp)", bonus: "+1 Speed", boost: "87" },
-    "LongBallCounter": { name: "Fabio Capello", bonus: "+1 Def. Awareness", boost: "88" },
-    "OutWide": { name: "Luis A. Roman (Guardiola)", bonus: "+1 Low Pass", boost: "87" }
-  };
-
-  if(style) {
-    const m = managerData[style];
-    badge.innerText = style;
-    rec.innerHTML = `Best Manager: <strong>${m.name}</strong><br>Boost: <span style="color:var(--accent)">${m.boost}</span> | Training: ${m.bonus}`;
-  }
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active-tab');
+  el.classList.add('active');
 }
 
 async function addPlayer() {
   const name = document.getElementById("playerName").value;
   const pos = document.getElementById("playerPosition").value;
+  const g = document.getElementById("goalsInput").value || 0;
+  const a = document.getElementById("assistsInput").value || 0;
   if(!name || !auth.currentUser) return;
-  await db.collection("squads").add({ uid: auth.currentUser.uid, name, pos, timestamp: Date.now() });
+  await db.collection("squads").add({ uid: auth.currentUser.uid, name, pos, g, a, timestamp: Date.now() });
   document.getElementById("playerName").value = "";
 }
 
 function renderPitch() {
+  const formation = document.getElementById("formationInput").value;
   const pitch = document.getElementById("pitchLayout");
+  const adv = document.getElementById("managerAdvice");
+
+  if(formation === "4-3-1-2") adv.innerText = "AI Advice: Use Fabio Capello for Long Ball Counter. Focus on your AMF feeding Batistuta.";
+  if(formation === "4-2-1-3") adv.innerText = "AI Advice: Xabi Alonso's Possession Game works best here. Use Hazard on the wings.";
+
   db.collection("squads").where("uid", "==", auth.currentUser.uid).onSnapshot(snap => {
     pitch.innerHTML = "";
-    const rows = { 
-      atk: ["CF", "SS", "LWF", "RWF"],
-      amf: ["AMF", "LMF", "RMF"],
-      cmf: ["CMF", "DMF"],
-      def: ["LB", "CB", "RB"],
-      gk: ["GK"]
-    };
+    document.getElementById("subsDisplay").innerHTML = "";
+    const rows = { atk: ["CF", "SS", "LWF", "RWF"], mid: ["AMF", "CMF", "DMF"], def: ["CB", "LB", "RB"], gk: ["GK"] };
 
     Object.keys(rows).forEach(key => {
-      let rowDiv = document.createElement("div");
-      rowDiv.className = "position-row";
+      let rowDiv = document.createElement("div"); rowDiv.className = "position-row";
       snap.forEach(doc => {
         const p = doc.data();
         if(rows[key].includes(p.pos)) {
           rowDiv.innerHTML += `<div class="player-card"><span class="pos-label">${p.pos}</span><span class="p-name">${p.name}</span></div>`;
+        }
+        if(p.pos === "SUB") {
+          document.getElementById("subsDisplay").innerHTML += `<div class="stat-item"><strong>${p.name}</strong><br>G/A: ${p.g}/${p.a}</div>`;
         }
       });
       pitch.appendChild(rowDiv);
@@ -158,18 +157,21 @@ function renderPitch() {
   });
 }
 
-function clearSquad() {
-  if(confirm("Release all players?")) {
-    db.collection("squads").where("uid", "==", auth.currentUser.uid).get().then(snap => {
-      snap.forEach(doc => doc.ref.delete());
-    });
-  }
+function saveIdea() {
+  const text = document.getElementById("ideaInput").value;
+  db.collection("ideas").add({ text, user: auth.currentUser.email, time: Date.now() });
 }
 
-auth.onAuthStateChanged(user => {
-  if (user) renderPitch();
-  else auth.signInAnonymously();
+db.collection("ideas").orderBy("time", "desc").onSnapshot(snap => {
+  const display = document.getElementById("ideasDisplay");
+  display.innerHTML = "";
+  snap.forEach(doc => {
+    const d = doc.data();
+    display.innerHTML += `<div class="container"><strong>${d.text}</strong><br><small>${d.user}</small></div>`;
+  });
 });
+
+auth.onAuthStateChanged(user => { if (user) renderPitch(); else auth.signInAnonymously(); });
 </script>
 </body>
 </html>
