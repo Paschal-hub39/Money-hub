@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Money Ideas Hub</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0f0f14;
+  color:white;
+}
+
+header {
+  text-align:center;
+  padding:20px;
+  border-bottom:2px solid #ff4da6;
+}
+
+input, button {
+  padding:10px;
+  margin:5px;
+  border:none;
+  border-radius:8px;
+}
+
+button {
+  background:#ff4da6;
+  color:white;
+  cursor:pointer;
+}
+
+.container {
+  padding:20px;
+}
+
+.card {
+  background:#1a1a22;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>💸 Money Ideas Hub</h1>
+<p>Azubuike Paschal Kamsiyochukwu</p>
+<p>📞 +2349161362962</p>
+</header>
+
+<!-- AUTH -->
+<div class="container">
+<h2>Login / Signup</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<br>
+<button onclick="signup()">Sign Up</button>
+<button onclick="login()">Login</button>
+<p id="userInfo"></p>
+</div>
+
+<!-- ADD IDEA -->
+<div class="container">
+<h2>Add Idea</h2>
+<input id="ideaInput" placeholder="Enter money idea">
+<button onclick="saveIdea()">Save</button>
+</div>
+
+<!-- IDEAS LIST -->
+<div class="container">
+<h2>Ideas</h2>
+<div id="ideas"></div>
+</div>
+
+<!-- PAY -->
+<div class="container">
+<button onclick="pay()">💰 Go Premium</button>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
+  authDomain: "money-app-bac4c.firebaseapp.com",
+  projectId: "money-app-bac4c",
+  storageBucket: "money-app-bac4c.firebasestorage.app",
+  messagingSenderId: "663419222795",
+  appId: "1:663419222795:web:1ad595d41854f3cc45000e"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* AUTH */
+function signup() {
+  let email = emailInput.value;
+  let password = password.value;
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(()=>alert("Account created"))
+    .catch(err=>alert(err.message));
+}
+
+function login() {
+  let email = emailInput.value;
+  let password = password.value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(()=>alert("Logged in"))
+    .catch(err=>alert(err.message));
+}
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    userInfo.innerText = "Logged in as " + user.email;
+  }
+});
+
+/* SAVE IDEA */
+function saveIdea(){
+  let idea = ideaInput.value;
+
+  db.collection("ideas").add({
+    text: idea,
+    time: new Date()
+  }).then(()=>{
+    alert("Saved!");
+  });
+}
+
+/* LOAD IDEAS */
+db.collection("ideas")
+.orderBy("time","desc")
+.onSnapshot(snapshot=>{
+  ideas.innerHTML = "";
+  snapshot.forEach(doc=>{
+    let div = document.createElement("div");
+    div.className="card";
+    div.innerText = doc.data().text;
+    ideas.appendChild(div);
+  });
+});
+
+/* PAYSTACK */
+function pay(){
+  let handler = PaystackPop.setup({
+    key: 'YOUR_PAYSTACK_PUBLIC_KEY',
+    email: 'user@email.com',
+    amount: 200000,
+    currency: "NGN",
+    callback: function(){
+      alert("Payment successful");
+    }
+  });
+  handler.openIframe();
+}
+</script>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+</body>
+</html>
