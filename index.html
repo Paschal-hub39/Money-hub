@@ -9,20 +9,16 @@
 :root { --primary:#ff4da6; --bg:#0f0f14; --card-bg:#1a1a22; --accent:#00ff88; --pitch:#1b5e20; --pos-bg:#ffd700; }
 body { margin:0; font-family:'Segoe UI',sans-serif; background:var(--bg); color:white; padding-bottom:90px; }
 
-/* Navigation */
 nav { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#111; color:white; }
 nav button { margin-left:5px; padding:5px 10px; border:none; border-radius:5px; background:#222; color:white; cursor:pointer; }
 nav button:hover { background:var(--primary); }
 
-/* Auth Overlay */
 #authOverlay { position:fixed; inset:0; background:var(--bg); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px; }
 .auth-box { background:var(--card-bg); padding:30px; border-radius:20px; width:100%; max-width:400px; border:1px solid #333; text-align:center; }
 .auth-box input { width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid #444; background:#252530; color:white; box-sizing:border-box; }
 
-/* Buttons */
 .btn-main { width:100%; padding:15px; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:bold; cursor:pointer; margin-bottom:5px; }
 
-/* Pitch Layout */
 .pitch-area { background:var(--pitch); border:3px solid rgba(255,255,255,0.3); border-radius:10px; height:450px; display:flex; flex-direction:column; justify-content:space-between; padding:20px 0; }
 .position-row { display:flex; justify-content:center; gap:12px; width:100%; min-height:80px; align-items:center; }
 .player-card { background:#fff; color:#000; border-radius:4px; width:65px; padding:5px; text-align:center; border-bottom:4px solid var(--pos-bg); transition: all 0.3s ease; }
@@ -30,10 +26,7 @@ nav button:hover { background:var(--primary); }
 .pos-label { background:#000; color:var(--pos-bg); font-size:0.6rem; font-weight:bold; display:block; }
 .p-name { font-size:0.65rem; font-weight:bold; display:block; margin-top:2px; }
 
-/* Sections */
 .section { display:none; margin-top:10px; }
-
-/* Player List */
 #playerList div { border:1px solid #555; padding:10px; margin:5px; border-radius:8px; }
 </style>
 </head>
@@ -66,15 +59,12 @@ nav button:hover { background:var(--primary); }
 
 <!-- APP CONTENT -->
 <div class="container" id="appContent" style="display:none;">
-
-  <!-- PITCH -->
   <div id="pitchSection" class="section">
     <div id="formationTabs" style="display:flex; gap:5px; margin-bottom:10px;"></div>
     <div id="playStyles" style="display:flex; gap:5px; margin-bottom:10px;"></div>
     <div class="pitch-area" id="pitch"></div>
   </div>
 
-  <!-- PLAYERS -->
   <div id="playerSection" class="section">
     <h3>Manage Players</h3>
     <div id="playerFormContainer">
@@ -82,14 +72,12 @@ nav button:hover { background:var(--primary); }
     </div>
   </div>
 
-  <!-- WALLET -->
   <div id="moneySection" class="section">
     <h3>Wallet / Paystack</h3>
     <button id="buyPremiumWallet" class="btn-main">Add Money / Unlock Premium</button>
     <div id="walletBalance">Balance: ₦0</div>
   </div>
 
-  <!-- AI MANAGER -->
   <div id="aiSection" class="section">
     <h3>AI Manager</h3>
     <input id="managerAIInput" placeholder="Ask AI (Best striker, formation, sub...)">
@@ -97,20 +85,17 @@ nav button:hover { background:var(--primary); }
     <div id="managerAIResult" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
   </div>
 
-  <!-- SETTINGS -->
   <div id="settingsSection" class="section">
     <h3>Settings</h3>
     <p>Change theme colors, pitch color, card styles, etc.</p>
   </div>
-
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- FIREBASE MODULAR -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-<script>
 const firebaseConfig = {
   apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
   authDomain: "money-app-bac4c.firebaseapp.com",
@@ -119,36 +104,43 @@ const firebaseConfig = {
   messagingSenderId: "663419222795",
   appId: "1:663419222795:web:1ad595d41854f3cc45000e"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
 
-/* ===== LOGIN ===== */
-async function sendLoginLink() {
-  const emailInput = document.getElementById("email").value.trim();
-  const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// EMAIL LINK
+const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+window.sendLoginLink = async function(){
+  const email = document.getElementById("email").value;
   try {
-    await auth.sendSignInLinkToEmail(emailInput, actionCodeSettings);
-    window.localStorage.setItem('emailForSignIn', emailInput);
-    document.getElementById("authMsg").innerText = "Check your Gmail! We sent a login link.";
-    document.getElementById("email").style.display="none";
-  } catch(e){ document.getElementById("authError").innerText=e.message; }
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    localStorage.setItem('emailForSignIn', email);
+    alert("Check your email for login link!");
+  } catch(e){ alert(e.message); }
 }
 
-async function signInWithGoogle(){
-  try { await auth.signInWithPopup(provider); } 
-  catch(e){ document.getElementById("authError").innerText=e.message; }
+// GOOGLE LOGIN
+window.signInWithGoogle = async function(){
+  try { await signInWithPopup(auth, provider); } 
+  catch(e){ alert(e.message); }
 }
 
-async function completeSignIn() {
-  if(auth.isSignInWithEmailLink(window.location.href)){
-    let email = window.localStorage.getItem('emailForSignIn') || prompt("Enter your email for confirmation");
-    try { await auth.signInWithEmailLink(email, window.location.href); window.localStorage.removeItem('emailForSignIn'); }
+// LOGOUT
+window.logout = function(){ signOut(auth).then(()=>location.reload()); }
+
+// COMPLETE EMAIL SIGN-IN
+async function completeSignIn(){
+  if(isSignInWithEmailLink(auth, window.location.href)){
+    let email = localStorage.getItem('emailForSignIn');
+    if(!email) email = prompt("Enter your email again:");
+    try { await signInWithEmailLink(auth, email, window.location.href); localStorage.removeItem('emailForSignIn'); }
     catch(e){ alert(e.message); }
   }
 }
 
-auth.onAuthStateChanged(user=>{
+// AUTH STATE
+onAuthStateChanged(auth, user=>{
   if(user){
     document.getElementById("authOverlay").style.display="none";
     document.getElementById("mainNav").style.display="flex";
@@ -157,10 +149,10 @@ auth.onAuthStateChanged(user=>{
   } else { completeSignIn(); }
 });
 
-function logout(){ auth.signOut().then(()=>location.reload()); }
-
 /* ===== SECTIONS ===== */
-function showSection(id){ ['pitchSection','playerSection','moneySection','aiSection','settingsSection'].forEach(s=>document.getElementById(s).style.display=(s===id?'block':'none')); }
+window.showSection = function(id){
+  ['pitchSection','playerSection','moneySection','aiSection','settingsSection'].forEach(s=>document.getElementById(s).style.display=(s===id?'block':'none'));
+}
 
 /* ===== PLAYER DATA ===== */
 let starters=[{name:"Player1",position:"GK",rating:105,role:"Goalkeeper",matchesPlayed:5,stamina:90},{name:"Player2",position:"RB",rating:102,role:"Defender",matchesPlayed:5,stamina:88},{name:"Player3",position:"CB",rating:104,role:"Defender",matchesPlayed:5,stamina:92},{name:"Player4",position:"CB",rating:103,role:"Defender",matchesPlayed:5,stamina:91},{name:"Player5",position:"LB",rating:101,role:"Defender",matchesPlayed:5,stamina:87},{name:"Player6",position:"CMF",rating:106,role:"Midfielder",matchesPlayed:5,stamina:93},{name:"Player7",position:"CMF",rating:104,role:"Midfielder",matchesPlayed:5,stamina:91},{name:"Player8",position:"AMF",rating:102,role:"Midfielder",matchesPlayed:5,stamina:89},{name:"Player9",position:"RW",rating:107,role:"Forward",matchesPlayed:5,stamina:95},{name:"Player10",position:"ST",rating:108,role:"Forward",matchesPlayed:5,stamina:97},{name:"Player11",position:"LW",rating:106,role:"Forward",matchesPlayed:5,stamina:94}];
@@ -172,8 +164,8 @@ let userFormations=[]; let currentFormation='4-3-3';
 
 function renderFormationTabs(){
   const container=document.getElementById('formationTabs'); container.innerHTML='';
-  formations.concat(userFormations).forEach(f){ const btn=document.createElement('button'); btn.innerText=f; btn.onclick=()=>setFormation(f); container.appendChild(btn);}
-  const customBtn=document.createElement('button'); customBtn.innerText='Create Formation'; customBtn.onclick=()=>{ const name=prompt('Custom formation name:'); if(!name)return; userFormations.push(name); renderFormationTabs(); setFormation(name);}; container.appendChild(customBtn);
+  formations.concat(userFormations).forEach(f=>{ const btn=document.createElement('button'); btn.innerText=f; btn.onclick=()=>setFormation(f); container.appendChild(btn); });
+  const customBtn=document.createElement('button'); customBtn.innerText='Create Formation'; customBtn.onclick=()=>{ const name=prompt('Custom formation name:'); if(!name)return; userFormations.push(name); renderFormationTabs(); setFormation(name); }; container.appendChild(customBtn);
 }
 function setFormation(f){ currentFormation=f; renderPitch(); document.getElementById('managerAIResult').innerText=`Formation set to ${f}`; }
 
@@ -219,7 +211,7 @@ function getFormationRows(f){
 }
 
 /* ===== AI MANAGER ===== */
-function managerAI(){
+window.managerAI = function(){
   const q=document.getElementById('managerAIInput').value.toLowerCase(); let ans="I couldn't understand the question.";
   if(q.includes("best striker")){ const s=[...starters,...substitutes].filter(p=>p.role.includes('Forward')); const best=s.reduce((a,b)=>b.rating>a.rating?b:a,s[0]); ans=`Best striker: ${best.name} rating ${best.rating}`;}
   else if(q.includes("formation")){ ans=`Based on your squad, ${currentFormation} suits best.`;}
