@@ -3,344 +3,282 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paschala Hub | Secure Tactical</title>
+<title>Paschala Hub | eFootball Squad Builder</title>
 
-<!-- Logo for PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff4da6">
-
-<!-- Fonts & Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="manifest" href="manifest.json">
 
 <style>
-:root {
-  --primary: #ff4da6;
-  --bg: #0f0f14;
-  --card-bg: #1a1a22;
-  --accent: #00ff88;
-  --pitch: #1b5e20;
-  --pos-bg: #ffd700;
+body{
+  margin:0;
+  font-family:Segoe UI, sans-serif;
+  background:#0f0f14;
+  color:white;
 }
-body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
 
-/* Header */
-header {
+/* HEADER */
+header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px 20px;
-  background: var(--card-bg);
-  border-bottom: 1px solid #333;
-  position: sticky;
-  top:0;
-  z-index: 1000;
+  padding:10px;
+  background:#1a1a22;
 }
-header .logo { display:flex; align-items:center; gap:10px; }
-header .logo img { height:40px; border-radius:5px; }
-header .profile { cursor:pointer; }
-header .hamburger { font-size:1.5rem; cursor:pointer; }
 
-/* Overlay Menu */
-#menuOverlay {
-  position: fixed; inset:0;
-  background: rgba(0,0,0,0.95);
+button{
+  background:#ff4da6;
+  border:none;
+  padding:6px 10px;
   color:white;
-  display:none;
-  flex-direction: column;
-  justify-content: center;
-  align-items:center;
-  z-index:2000;
-  gap:20px;
+  border-radius:6px;
+  margin:3px;
+  cursor:pointer;
+  font-size:12px;
 }
-#menuOverlay a { color:white; font-size:1.2rem; text-decoration:none; }
 
-/* Auth Screen */
-#authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.auth-box { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #333; text-align: center; }
-
-/* Main container */
-.container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
-
-/* Input & Button */
-input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
-button { cursor:pointer; border:none; border-radius:10px; padding:10px; }
-
-/* Pitch Layout */
-.pitch-area { background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
-.position-row { display: flex; justify-content: center; gap: 12px; width: 100%; min-height: 80px; align-items: center; }
-.player-card { background: #fff; color: #000; border-radius: 4px; width: 65px; padding: 5px; text-align: center; border-bottom: 4px solid var(--pos-bg); cursor: grab; position: relative; }
-.player-card:hover { transform: scale(1.05); box-shadow:0 0 10px var(--primary);}
-.pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; }
-.p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; }
-
-/* Player edit/delete buttons */
-.player-card .edit-btn, .player-card .delete-btn {
-  position: absolute; top:2px; font-size:0.7rem; cursor:pointer; padding:2px;
+/* LOGIN BOX */
+#authBox{
+  padding:15px;
 }
-.player-card .edit-btn { right:18px; color: var(--accent); }
-.player-card .delete-btn { right:2px; color:#ff4d4d; }
+
+/* APP */
+.container{
+  padding:10px;
+}
+
+/* PITCH */
+.pitch{
+  background:#1b5e20;
+  border-radius:12px;
+  height:450px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:10px;
+  justify-content:center;
+}
+
+/* PLAYER CARD */
+.player{
+  background:white;
+  color:black;
+  width:80px;
+  padding:5px;
+  border-radius:8px;
+  text-align:center;
+  font-size:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.3);
+  cursor:grab;
+}
+.player.fixed{
+  cursor:not-allowed;
+  background:#ddd;
+}
+.player strong{
+  font-size:11px;
+}
+
+select,input{
+  width:100%;
+  margin-top:3px;
+  border-radius:4px;
+  padding:3px;
+}
 </style>
-</head>
 
+</head>
 <body>
 
-<!-- Header -->
 <header>
-  <div class="logo"><img src="ei_1775215120589-removebg-preview_1~2.png" alt="Logo"><span id="greetingText">Hi Guest</span></div>
-  <div class="hamburger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+  <span id="userText">Not logged in</span>
+  <div>
+    <select id="managerSelect" onchange="selectManager()">
+      <option value="">Select Manager</option>
+      <option value="Possession Ball">Possession Ball</option>
+      <option value="Quick Counter">Quick Counter</option>
+      <option value="Long Ball Counter">Long Ball Counter</option>
+      <option value="Out Wide">Out Wide</option>
+      <option value="Long Ball">Long Ball</option>
+    </select>
+    <select id="formationSelect" onchange="setFormation(this.value)">
+      <option value="4-3-3">4-3-3</option>
+      <option value="4-2-3-1">4-2-3-1</option>
+      <option value="3-5-2">3-5-2</option>
+      <option value="4-4-2">4-4-2</option>
+      <option value="4-1-4-1">4-1-4-1</option>
+      <option value="3-4-3">3-4-3</option>
+      <option value="5-3-2">5-3-2</option>
+      <option value="4-2-2-2">4-2-2-2</option>
+    </select>
+    <button onclick="logout()">Logout</button>
+  </div>
 </header>
 
-<!-- Menu Overlay -->
-<div id="menuOverlay">
-  <a href="#" onclick="showTab('pitchTab')">Pitch</a>
-  <a href="#" onclick="showTab('formationsTab')">Formations</a>
-  <a href="#" onclick="showTab('playStylesTab')">Play Styles</a>
-  <a href="#" onclick="showTab('walletTab')">Wallet</a>
-  <a href="#" onclick="showTab('settingsTab')">Settings</a>
-  <a href="#" onclick="logout()">Logout</a>
+<!-- LOGIN -->
+<div id="authBox">
+  <h3>Login</h3>
+  <input id="email" placeholder="Enter email">
+  <button onclick="sendLink()">Send Login Link</button>
 </div>
 
-<!-- Auth Screen -->
-<div id="authOverlay">
-  <div class="auth-box">
-    <h1 style="color:var(--primary);">Paschala Hub</h1>
-    <p id="authMsg" style="color:#888; font-size:0.85rem;">Enter your Gmail to receive a login link</p>
-    <input id="email" type="email" placeholder="your-email@gmail.com">
-    <button class="btn-main" onclick="sendLoginLink()">SEND LOGIN LINK</button>
-    <p id="authError" style="color:#ff4d4d; font-size:0.75rem; margin-top:15px;"></p>
-  </div>
-</div>
-
-<!-- App Content -->
-<div id="appContent" style="display:none;">
+<!-- APP -->
+<div id="app" style="display:none;">
   <div class="container">
-    <!-- Pitch Tab -->
-    <div id="pitchTab" class="tab">
-      <button onclick="addPlayer()">Add Player</button>
-      <div class="pitch-area" id="pitch"></div>
-    </div>
-
-    <!-- Formations Tab -->
-    <div id="formationsTab" class="tab" style="display:none;">
-      <h3>Formations</h3>
-      <div id="formationsList"></div>
-    </div>
-
-    <!-- Play Styles Tab -->
-    <div id="playStylesTab" class="tab" style="display:none;">
-      <h3>Play Styles</h3>
-      <div>
-        <select id="playStyleSelect">
-          <option value="possession">Possession</option>
-          <option value="counter">Counter</option>
-          <option value="highPress">High Press</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Wallet Tab -->
-    <div id="walletTab" class="tab" style="display:none;">
-      <h3>Wallet</h3>
-      <p>Balance: <span id="walletBalance">0</span></p>
-      <button onclick="addMoney(100)">Add 100</button>
-    </div>
-
-    <!-- Settings Tab -->
-    <div id="settingsTab" class="tab" style="display:none;">
-      <h3>Settings</h3>
-      <button onclick="editProfile()">Edit Profile</button>
-    </div>
+    <button onclick="addPlayer()">➕ Add Player</button>
+    <div class="pitch" id="pitch"></div>
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<!-- SortableJS for drag & drop -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
-/* Firebase Config */
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
   authDomain: "money-app-bac4c.firebaseapp.com",
   projectId: "money-app-bac4c",
-  storageBucket: "money-app-bac4c.appspot.com",
-  messagingSenderId: "663419222795",
-  appId: "1:663419222795:web:1ad595d41854f3cc45000e"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* Hamburger Menu */
-function toggleMenu() {
-  const overlay = document.getElementById('menuOverlay');
-  overlay.style.display = overlay.style.display==='flex'?'none':'flex';
-}
+let players = [];
+let currentFormation = "4-3-3";
+let manager = "";
 
-/* Tabs */
-function showTab(tabId){
-  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
-  document.getElementById(tabId).style.display='block';
-  toggleMenu();
+// LOGIN
+async function sendLink(){
+  const email=document.getElementById("email").value.trim();
+  const actionCodeSettings={url:window.location.href, handleCodeInApp:true};
+  await auth.sendSignInLinkToEmail(email,actionCodeSettings);
+  localStorage.setItem("emailForSignIn", email);
+  alert("Check your email!");
 }
-
-/* Auth */
-async function sendLoginLink(){
-  const email = document.getElementById("email").value.trim();
-  const actionCodeSettings = { url: window.location.href, handleCodeInApp:true };
-  try {
-    await auth.sendSignInLinkToEmail(email, actionCodeSettings);
-    window.localStorage.setItem('emailForSignIn', email);
-    document.getElementById("authMsg").innerText="Check your Gmail! We sent a login link.";
-    document.getElementById("email").style.display="none";
-  } catch(e){ document.getElementById("authError").innerText = e.message; }
-}
-
 async function completeSignIn(){
   if(auth.isSignInWithEmailLink(window.location.href)){
-    let email = window.localStorage.getItem('emailForSignIn');
-    if(!email) email = window.prompt('Provide your email for confirmation');
-    try{
-      await auth.signInWithEmailLink(email, window.location.href);
-      window.localStorage.removeItem('emailForSignIn');
-    } catch(e){ alert(e.message); }
+    let email=localStorage.getItem("emailForSignIn");
+    if(!email) email=prompt("Enter your email again");
+    await auth.signInWithEmailLink(email, window.location.href);
+    localStorage.removeItem("emailForSignIn");
   }
 }
 
-/* Auth State */
-auth.onAuthStateChanged(async user=>{
+// AUTH
+auth.onAuthStateChanged(user=>{
   if(user){
-    document.getElementById("authOverlay").style.display="none";
-    document.getElementById("appContent").style.display="block";
-    loadUserProfile();
-    renderPitch();
-    loadFormations();
-    loadWallet();
-  } else {
+    document.getElementById("authBox").style.display="none";
+    document.getElementById("app").style.display="block";
+    document.getElementById("userText").innerText="Hi "+user.email;
+    loadPlayers();
+  }else{
     completeSignIn();
   }
 });
 
-/* User Profile */
-async function loadUserProfile(){
-  const uid = auth.currentUser.uid;
-  const doc = await db.collection("users").doc(uid).get();
-  let name = auth.currentUser.displayName || doc.data()?.settings?.name || "Guest";
-  document.getElementById("greetingText").innerText = "Hi "+name;
+// LOGOUT
+function logout(){ auth.signOut(); }
+
+// MANAGER
+function selectManager(){
+  manager = document.getElementById("managerSelect").value;
 }
 
-function editProfile(){
-  const newName = prompt("Enter your name:");
-  if(!newName) return;
-  const uid = auth.currentUser.uid;
-  db.collection("users").doc(uid).set({settings:{name:newName}}, {merge:true});
-  document.getElementById("greetingText").innerText="Hi "+newName;
-}
+// FORMATION
+function setFormation(val){ currentFormation = val; render(); }
 
-/* Wallet */
-async function loadWallet(){
-  const uid = auth.currentUser.uid;
-  const doc = await db.collection("users").doc(uid).get();
-  const balance = doc.data()?.wallet?.balance || 0;
-  document.getElementById("walletBalance").innerText = balance;
-}
-async function addMoney(amount){
-  const uid = auth.currentUser.uid;
-  const userRef = db.collection("users").doc(uid);
-  await userRef.set({wallet:{balance:firebase.firestore.FieldValue.increment(amount)}},{merge:true});
-  loadWallet();
-}
-
-/* Pitch & Players */
-let players=[];
-const pitch = document.getElementById("pitch");
-
-function renderPitch(){
-  pitch.innerHTML="";
-  const uid = auth.currentUser.uid;
-  db.collection("users").doc(uid).collection("players").get().then(snap=>{
-    players = [];
-    snap.forEach(doc=>{
-      const data = doc.data();
-      data.id = doc.id;
-      players.push(data);
-    });
-    players.forEach(p=>addPlayerCard(p));
-  });
-}
-
-function addPlayerCard(player){
-  const div = document.createElement("div");
-  div.className="player-card";
-  div.setAttribute("data-id",player.id);
-  div.innerHTML=`<span class="pos-label">${player.position}</span>
-                 <span class="p-name">${player.name}</span>
-                 <span>Rating:${player.rating}</span>
-                 <span>MP:${player.matches}</span>
-                 <span>Stamina:${player.stamina}</span>
-                 <span class="edit-btn" onclick="editPlayer('${player.id}')"><i class="fas fa-edit"></i></span>
-                 <span class="delete-btn" onclick="deletePlayer('${player.id}')"><i class="fas fa-trash"></i></span>`;
-  pitch.appendChild(div);
-}
-
-/* Add/Edit/Delete Players */
+// ADD PLAYER
 async function addPlayer(){
-  const name = prompt("Player Name:");
+  const name=prompt("Player name:");
   if(!name) return;
-  const position = prompt("Position (e.g., ST, CMF):","ST");
-  const rating = parseInt(prompt("Rating:", "100"));
-  const matches = parseInt(prompt("Matches Played:", "0"));
-  const stamina = parseInt(prompt("Stamina:", "100"));
+  const rating=parseInt(prompt("Rating (0-200):"))||100;
+  const stamina=parseInt(prompt("Stamina (0-100):"))||90;
+  const role = prompt("Role/Playstyle (e.g., Goal Poacher, Box-to-Box, Creative Playmaker, DMF, AMF, etc.)") || "CMF";
+  const uid=auth.currentUser.uid;
+  await db.collection("users").doc(uid).collection("players").add({name,rating,stamina,role,position:null});
+  loadPlayers();
+}
+
+// LOAD
+async function loadPlayers(){
   const uid = auth.currentUser.uid;
-  const docRef = await db.collection("users").doc(uid).collection("players").add({
-    name, position, rating, matches, stamina
+  const snap = await db.collection("users").doc(uid).collection("players").get();
+  players=[];
+  snap.forEach(doc=>players.push({id:doc.id,...doc.data()}));
+  render();
+}
+
+// RENDER
+function render(){
+  const pitch=document.getElementById("pitch");
+  pitch.innerHTML="";
+  // For demo, 11 slots
+  const slots = Array.from({length:11}, (_,i)=>i);
+  slots.forEach(i=>{
+    const p = players[i] || {name:"Empty", rating:0, stamina:0, role:"CMF", id:null};
+    const div=document.createElement("div");
+    div.className="player"+(i===0?" fixed":"");
+    div.dataset.id = p.id;
+    div.innerHTML=`
+      <strong>${p.name}</strong><br>
+      ⭐ ${p.rating}<br>
+      🔋 ${p.stamina}<br>
+      <small>${p.role}</small><br>
+      ${p.id?`
+      <button onclick="editPlayer('${p.id}')">✏️</button>
+      <button onclick="deletePlayer('${p.id}')">🗑</button>
+      <button onclick="askAI('${p.id}')">🤖</button>`:""}
+    `;
+    pitch.appendChild(div);
   });
-  renderPitch();
+
+  // SortableJS drag & drop
+  new Sortable(pitch,{
+    animation:150,
+    ghostClass:'ghost',
+    filter:'.fixed', // GK fixed
+    onEnd: async function(evt){
+      // Save positions to Firestore
+      const uid = auth.currentUser.uid;
+      players.forEach((p, index)=>{
+        if(p.id) db.collection("users").doc(uid).collection("players").doc(p.id).update({position:index});
+      });
+    }
+  });
 }
 
+// EDIT PLAYER
 async function editPlayer(id){
+  const p = players.find(x=>x.id===id);
+  const name = prompt("Name:",p.name) || p.name;
+  const rating = parseInt(prompt("Rating:",p.rating))||p.rating;
+  const stamina = parseInt(prompt("Stamina:",p.stamina))||p.stamina;
+  const role = prompt("Role/Playstyle:",p.role)||p.role;
   const uid = auth.currentUser.uid;
-  const docRef = db.collection("users").doc(uid).collection("players").doc(id);
-  const doc = await docRef.get();
-  if(!doc.exists) return;
-  const data = doc.data();
-  const name = prompt("Player Name:",data.name);
-  const position = prompt("Position:",data.position);
-  const rating = parseInt(prompt("Rating:",data.rating));
-  const matches = parseInt(prompt("Matches Played:",data.matches));
-  const stamina = parseInt(prompt("Stamina:",data.stamina));
-  await docRef.set({name,position,rating,matches,stamina});
-  renderPitch();
+  await db.collection("users").doc(uid).collection("players").doc(id).update({name,rating,stamina,role});
+  loadPlayers();
 }
 
+// DELETE PLAYER
 async function deletePlayer(id){
-  if(!confirm("Release this player?")) return;
+  if(!confirm("Release player?")) return;
   const uid = auth.currentUser.uid;
   await db.collection("users").doc(uid).collection("players").doc(id).delete();
-  renderPitch();
+  loadPlayers();
 }
 
-/* Drag & Drop using SortableJS */
-new Sortable(pitch,{animation:150});
-
-/* Formations */
-async function loadFormations(){
-  const snap = await db.collection("formations").get();
-  const list = document.getElementById("formationsList");
-  list.innerHTML="";
-  snap.forEach(doc=>{
-    const div = document.createElement("div");
-    div.innerText=doc.id;
-    list.appendChild(div);
-  });
+// AI SUGGESTION
+function askAI(id){
+  const p = players.find(x=>x.id===id);
+  let role="CMF";
+  if(p.rating>=140) role="ST 🔥 Goal Machine";
+  else if(p.rating>=120 && p.stamina>=90) role="Box-to-Box CMF";
+  else if(p.stamina>=95) role="Wing Back";
+  else if(p.rating<100) role="DMF (Defensive)";
+  alert(`${p.name} best role: ${role}`);
 }
-
-/* Logout */
-function logout(){ auth.signOut(); }
 </script>
 
 </body>
