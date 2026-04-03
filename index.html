@@ -3,107 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paschala Hub | Money & eFootball</title>
+<title>Paschala Hub | eFootball Master</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --efootball: #283593; }
+  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; --manager-color: #00d2ff; }
+  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
   
-  body { 
-    margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white;
-    background-image: linear-gradient(rgba(15, 15, 20, 0.95), rgba(15, 15, 20, 0.95)), 
-                      url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000');
-    background-attachment: fixed; background-size: cover; padding-bottom: 80px;
+  .container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
+  
+  /* Manager & Playstyle UI */
+  .manager-hub { background: linear-gradient(145deg, #16161d, #252530); border-left: 5px solid var(--manager-color); padding: 15px; margin: 10px; border-radius: 10px; }
+  .playstyle-badge { background: var(--manager-color); color: #000; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
+
+  /* Pitch & Player Styles */
+  .pitch-area { 
+    background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; 
+    padding: 15px; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
-
-  header { text-align:center; padding:20px; border-bottom: 2px solid var(--primary); background: rgba(22, 22, 29, 0.9); }
+  .position-row { display: flex; justify-content: center; gap: 6px; width: 100%; min-height: 70px; align-items: center; }
   
-  .tab-content { display: none; padding: 20px; max-width: 600px; margin: auto; animation: fadeIn 0.4s ease; }
-  .active-tab { display: block; }
+  .player-card { 
+    background: #fff; color: #000; border-radius: 4px; width: 52px; padding: 4px;
+    text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-bottom: 3px solid var(--pos-bg);
+  }
+  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.55rem; font-weight: bold; display: block; border-radius: 2px; }
+  .p-name { font-size: 0.6rem; font-weight: bold; white-space: nowrap; overflow: hidden; display: block; margin-top: 2px; }
 
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #16161d; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 1000; }
+  input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
+  .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
+  
+  .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #16161d; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 1000; }
   .nav-item { color: #888; text-align: center; font-size: 0.7rem; cursor: pointer; }
   .nav-item.active { color: var(--primary); }
-  .nav-item i { display: block; font-size: 1.4rem; margin-bottom: 3px; }
-
-  .container { background: rgba(26, 26, 34, 0.85); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-  input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
-  
-  .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
-  .card { background: var(--card-bg); padding: 15px; margin-top: 10px; border-radius: 12px; border-left: 4px solid var(--primary); }
-
-  /* Squad UI */
-  .pitch { background: linear-gradient(#2e7d32, #1b5e20); border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 20px; text-align: center; margin-top: 10px; }
-  .player-tag { background: white; color: black; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: block; margin-top: 5px; }
-  .bench { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-  .sub-card { background: #333; padding: 8px; border-radius: 5px; font-size: 0.8rem; border-bottom: 2px solid var(--accent); }
-
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
-
 <body>
 
-<header>
-  <h1>Paschala Hub</h1>
-  <p id="topStatus" style="color:var(--primary); font-size: 0.8rem;">Connecting...</p>
-</header>
-
-<div id="home" class="tab-content active-tab">
-  <div class="container">
-    <h2>💸 Money Strategies</h2>
-    <input id="ideaInput" placeholder="Share a profit-making idea...">
-    <button class="btn-main" onclick="saveIdea()">POST IDEA</button>
+<div class="manager-hub" id="managerDisplay">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-weight:bold;">MANAGER HUB</span>
+    <span class="playstyle-badge" id="activeStyle">Select Style</span>
   </div>
-  <div id="ideasDisplay"></div>
+  <p id="managerRec" style="font-size:0.85rem; margin-top:8px; color:#bbb;">Pick your playstyle to see the best manager for your team.</p>
 </div>
 
-<div id="efootball" class="tab-content">
-  <div class="container">
-    <h2>🎮 Squad Management</h2>
-    <input id="playerInput" placeholder="Add First XI Player Name">
-    <input id="subInput" placeholder="Add Substitute Player Name">
-    <button class="btn-main" style="background: var(--efootball);" onclick="saveToSquad()">ADD TO SQUAD</button>
-  </div>
-
-  <div class="container">
-    <h2>📋 Your Current XI</h2>
-    <div class="pitch" id="xiDisplay">No players added yet.</div>
-    
-    <h2 style="margin-top:20px;">🔄 Substitutes</h2>
-    <div class="bench" id="subsDisplay"></div>
-  </div>
+<div class="container">
+  <h3>1. Choose Your Meta</h3>
+  <select id="playstyleInput" onchange="updateManagerInfo()">
+    <option value="">-- Select Playstyle --</option>
+    <option value="Possession">Possession Game</option>
+    <option value="QuickCounter">Quick Counter</option>
+    <option value="LongBallCounter">Long Ball Counter</option>
+    <option value="OutWide">Out Wide</option>
+  </select>
+  
+  <select id="formationInput" onchange="renderPitch()">
+    <option value="4-3-1-2">4-3-1-2 (Diamond)</option>
+    <option value="4-2-1-3">4-2-1-3 (Offensive)</option>
+    <option value="4-2-2-2">4-2-2-2 (Standard)</option>
+  </select>
 </div>
 
-<div id="stats" class="tab-content">
-  <div class="container">
-    <h2>🏆 Top Contributors</h2>
-    <div id="leaderboard"></div>
-  </div>
+<div class="container">
+  <div class="pitch-area" id="pitchLayout"></div>
 </div>
 
-<div id="settings" class="tab-content">
-  <div class="container">
-    <h2>Settings</h2>
-    <p id="userEmailDisplay"></p>
-    <button class="btn-main" style="background:#444;" onclick="auth.signOut()">LOGOUT</button>
-  </div>
-</div>
-
-<div id="authModal" style="display: none; position: fixed; inset: 0; background: var(--bg); z-index: 2000; padding: 40px 20px;">
-  <div class="container">
-    <h2>Login / Sign Up</h2>
-    <input id="regEmail" type="email" placeholder="Email">
-    <input id="regPassword" type="password" placeholder="Password">
-    <button class="btn-main" onclick="signup()">GET STARTED</button>
-    <button class="btn-main" style="background:#333; margin-top:10px;" onclick="login()">LOGIN</button>
-  </div>
+<div class="container">
+  <h3>2. Register Player</h3>
+  <input id="playerName" placeholder="Player Name">
+  <select id="playerPosition">
+    <option value="CF">CF</option><option value="SS">SS</option><option value="LWF">LWF</option><option value="RWF">RWF</option>
+    <option value="AMF">AMF</option><option value="LMF">LMF</option><option value="RMF">RMF</option><option value="CMF">CMF</option>
+    <option value="DMF">DMF</option><option value="LB">LB</option><option value="RB">RB</option><option value="CB">CB</option><option value="GK">GK</option>
+  </select>
+  <button class="btn-main" onclick="addPlayer()">ADD TO FIELD</button>
+  <button onclick="clearSquad()" style="width:100%; background:none; color:#ff4d4d; border:none; margin-top:15px; font-size:0.8rem;">Release All Players</button>
 </div>
 
 <nav class="bottom-nav">
-  <div class="nav-item active" onclick="switchTab('home', this)"><i class="fas fa-coins"></i>Money</div>
-  <div class="nav-item" onclick="switchTab('efootball', this)"><i class="fas fa-running"></i>Squad</div>
-  <div class="nav-item" onclick="switchTab('stats', this)"><i class="fas fa-chart-bar"></i>Stats</div>
-  <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-user"></i>Me</div>
+  <div class="nav-item active"><i class="fas fa-strategy"></i>Squad</div>
+  <div class="nav-item" onclick="alert('Money Feed is Live!')"><i class="fas fa-wallet"></i>Money</div>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -111,102 +92,83 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
   authDomain: "money-app-bac4c.firebaseapp.com",
   projectId: "money-app-bac4c",
   storageBucket: "money-app-bac4c.firebasestorage.app",
   messagingSenderId: "663419222795",
-  appId: "1:663419222795:web:1ad595d41854f3cc45000e",
-  measurementId: "G-F5VM9FQW5K"
+  appId: "1:663419222795:web:1ad595d41854f3cc45000e"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function switchTab(tabId, el) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active-tab');
-  el.classList.add('active');
-}
+function updateManagerInfo() {
+  const style = document.getElementById("playstyleInput").value;
+  const badge = document.getElementById("activeStyle");
+  const rec = document.getElementById("managerRec");
 
-// Authentication Logic
-function signup() { auth.createUserWithEmailAndPassword(regEmail.value, regPassword.value); }
-function login() { auth.signInWithEmailAndPassword(regEmail.value, regPassword.value); }
+  const managerData = {
+    "Possession": { name: "Xabi Alonso", bonus: "+1 Ball Control", boost: "88" },
+    "QuickCounter": { name: "G. Zeitzler (Klopp)", bonus: "+1 Speed", boost: "87" },
+    "LongBallCounter": { name: "Fabio Capello", bonus: "+1 Def. Awareness", boost: "88" },
+    "OutWide": { name: "Luis A. Roman (Guardiola)", bonus: "+1 Low Pass", boost: "87" }
+  };
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("authModal").style.display = "none";
-    document.getElementById("topStatus").innerText = "PLAYER: " + user.email;
-    document.getElementById("userEmailDisplay").innerText = user.email;
-    loadSquad(user.uid);
-  } else {
-    document.getElementById("authModal").style.display = "block";
-  }
-});
-
-// SQUAD LOGIC
-function saveToSquad() {
-  const user = auth.currentUser;
-  const pName = document.getElementById("playerInput").value;
-  const sName = document.getElementById("subInput").value;
-  
-  if(pName) {
-    db.collection("squads").add({ uid: user.uid, name: pName, type: 'xi', time: Date.now() });
-    document.getElementById("playerInput").value = "";
-  }
-  if(sName) {
-    db.collection("squads").add({ uid: user.uid, name: sName, type: 'sub', time: Date.now() });
-    document.getElementById("subInput").value = "";
+  if(style) {
+    const m = managerData[style];
+    badge.innerText = style;
+    rec.innerHTML = `Best Manager: <strong>${m.name}</strong><br>Boost: <span style="color:var(--accent)">${m.boost}</span> | Training: ${m.bonus}`;
   }
 }
 
-function loadSquad(uid) {
-  db.collection("squads").where("uid", "==", uid).orderBy("time", "asc").onSnapshot(snap => {
-    const xiBox = document.getElementById("xiDisplay");
-    const subBox = document.getElementById("subsDisplay");
-    xiBox.innerHTML = "";
-    subBox.innerHTML = "";
-    
-    snap.forEach(doc => {
-      const data = doc.data();
-      if(data.type === 'xi') {
-        xiBox.innerHTML += `<div style="display:inline-block; margin:5px;"><i class="fas fa-user-circle fa-2x"></i><span class="player-tag">${data.name}</span></div>`;
-      } else {
-        subBox.innerHTML += `<div class="sub-card">${data.name}</div>`;
-      }
+async function addPlayer() {
+  const name = document.getElementById("playerName").value;
+  const pos = document.getElementById("playerPosition").value;
+  if(!name || !auth.currentUser) return;
+  await db.collection("squads").add({ uid: auth.currentUser.uid, name, pos, timestamp: Date.now() });
+  document.getElementById("playerName").value = "";
+}
+
+function renderPitch() {
+  const pitch = document.getElementById("pitchLayout");
+  db.collection("squads").where("uid", "==", auth.currentUser.uid).onSnapshot(snap => {
+    pitch.innerHTML = "";
+    const rows = { 
+      atk: ["CF", "SS", "LWF", "RWF"],
+      amf: ["AMF", "LMF", "RMF"],
+      cmf: ["CMF", "DMF"],
+      def: ["LB", "CB", "RB"],
+      gk: ["GK"]
+    };
+
+    Object.keys(rows).forEach(key => {
+      let rowDiv = document.createElement("div");
+      rowDiv.className = "position-row";
+      snap.forEach(doc => {
+        const p = doc.data();
+        if(rows[key].includes(p.pos)) {
+          rowDiv.innerHTML += `<div class="player-card"><span class="pos-label">${p.pos}</span><span class="p-name">${p.name}</span></div>`;
+        }
+      });
+      pitch.appendChild(rowDiv);
     });
   });
 }
 
-// MONEY IDEAS LOGIC
-function saveIdea() {
-  const text = document.getElementById("ideaInput").value;
-  if (!text) return;
-  db.collection("ideas").add({
-    text: text,
-    userEmail: auth.currentUser.email,
-    time: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => { ideaInput.value = ""; });
+function clearSquad() {
+  if(confirm("Release all players?")) {
+    db.collection("squads").where("uid", "==", auth.currentUser.uid).get().then(snap => {
+      snap.forEach(doc => doc.ref.delete());
+    });
+  }
 }
 
-db.collection("ideas").orderBy("time", "desc").onSnapshot(snapshot => {
-  const feed = document.getElementById("ideasDisplay");
-  const lbData = {};
-  feed.innerHTML = "";
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    feed.innerHTML += `<div class="card"><strong>${d.text}</strong><br><small style="color:var(--primary)">${d.userEmail}</small></div>`;
-    lbData[d.userEmail] = (lbData[d.userEmail] || 0) + 1;
-  });
-  
-  const lb = document.getElementById("leaderboard");
-  lb.innerHTML = "";
-  Object.entries(lbData).sort((a,b) => b[1]-a[1]).slice(0,5).forEach(([email, count]) => {
-    lb.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><span>${email}</span><span style="color:var(--accent)">${count}</span></div>`;
-  });
+auth.onAuthStateChanged(user => {
+  if (user) renderPitch();
+  else auth.signInAnonymously();
 });
 </script>
 </body>
