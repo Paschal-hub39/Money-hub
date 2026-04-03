@@ -3,183 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paschala Hub | Tactical eFootball</title>
+<title>Paschala Hub | Secure Tactical</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-<script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-:root {
-  --primary: #ff4da6;
-  --bg: #0f0f14;
-  --card-bg: #1a1a22;
-  --accent: #00ff88;
-  --pitch: #1b5e20;
-  --pos-bg: #ffd700;
-}
+  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; }
+  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
 
-body {
-  margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color:white;
-  padding-bottom: 90px;
-}
+  /* Navigation */
+  nav { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#111; color:white; }
+  nav button { margin-left:5px; padding:5px 10px; border:none; border-radius:5px; background:#222; color:white; cursor:pointer; }
+  nav button:hover { background:var(--primary); }
 
-#authOverlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 5000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+  /* Auth Screen */
+  #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .auth-box { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #333; text-align: center; }
 
-.auth-box {
-  background: var(--card-bg);
-  padding: 30px;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 350px;
-  border: 1px solid #333;
-  text-align: center;
-}
+  .container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
+  input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
+  .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
 
-.container {
-  background: rgba(26, 26, 34, 0.95);
-  padding: 15px;
-  border-radius: 15px;
-  margin: 10px;
-  border: 1px solid #333;
-}
+  /* Pitch Layout */
+  .pitch-area { background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
+  .position-row { display: flex; justify-content: center; gap: 12px; width: 100%; min-height: 80px; align-items: center; }
+  .player-card { background: #fff; color: #000; border-radius: 4px; width: 65px; padding: 5px; text-align: center; border-bottom: 4px solid var(--pos-bg); transition: all 0.3s ease; }
+  .player-card.highlight-slot { border: 3px dashed var(--accent); transform: scale(1.05); }
+  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; }
+  .p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; }
 
-input {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 12px;
-  border-radius: 10px;
-  border: 1px solid #444;
-  background: #252530;
-  color: white;
-  box-sizing: border-box;
-}
-
-.btn-main {
-  width: 100%;
-  padding: 15px;
-  border-radius: 12px;
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.pitch-area {
-  background: var(--pitch);
-  border: 3px solid rgba(255,255,255,0.3);
-  border-radius: 10px;
-  min-height: 450px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px 0;
-}
-
-.position-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 80px;
-  align-items: center;
-  position: relative;
-}
-
-.player-card {
-  background: #fff;
-  color: #000;
-  border-radius: 4px;
-  width: 65px;
-  padding: 5px;
-  text-align: center;
-  border-bottom: 4px solid var(--pos-bg);
-  cursor: grab;
-  position: relative;
-}
-
-.player-card .tooltip {
-  visibility: hidden;
-  opacity: 0;
-  background: var(--card-bg);
-  color: white;
-  font-size: 0.7rem;
-  padding: 5px;
-  border-radius: 5px;
-  position: absolute;
-  top: -70px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  z-index: 10;
-  transition: opacity 0.2s;
-}
-
-.player-card:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-.ghost {
-  opacity: 0.4;
-  transform: scale(1.05);
-  border: 2px dashed var(--primary);
-}
-
-.substitutes-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 15px;
-}
-
-/* ===== AI VISUAL HIGHLIGHT ===== */
-.highlight-slot {
-  outline: 3px dashed gold;
-  transform: scale(1.1);
-  transition: all 0.2s;
-}
-
-/* ===== SUBSTITUTE RECOMMENDATION HIGHLIGHT ===== */
-.sub-recommend {
-  outline: 3px dashed cyan;
-  transform: scale(1.1);
-  transition: all 0.2s;
-}
+  /* Sections */
+  .section { display:none; }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
+<!-- AUTH -->
 <div id="authOverlay">
   <div class="auth-box">
     <h1 style="color:var(--primary);">Paschala Hub</h1>
     <p id="authMsg" style="color:#888; font-size:0.85rem;">Enter your Gmail to receive a login link</p>
-    <input id="email" type="email" placeholder="youremail@gmail.com">
+    <input id="email" type="email" placeholder="paschalkamsi9@gmail.com">
     <button class="btn-main" onclick="sendLoginLink()">SEND LOGIN LINK</button>
     <p id="authError" style="color:#ff4d4d; font-size:0.75rem; margin-top:15px;"></p>
   </div>
 </div>
 
-<!-- APP CONTENT -->
-<div id="appContent" style="display:none;">
-  <div class="container">
-    <div class="pitch-area" id="pitch"></div>
-    <div class="substitutes-row" id="subs"></div>
-    <button id="buyPremium" class="btn-main">Unlock Premium Features</button>
+<!-- NAVIGATION -->
+<nav id="mainNav" style="display:none;">
+  <span>Paschala Hub</span>
+  <div>
+    <button onclick="showSection('pitchSection')">Pitch</button>
+    <button onclick="showSection('playerSection')">Players</button>
+    <button onclick="showSection('moneySection')">Wallet</button>
+    <button onclick="showSection('aiSection')">AI Manager</button>
+    <button onclick="showSection('settingsSection')">Settings</button>
+    <button onclick="logout()">Logout</button>
   </div>
+</nav>
+
+<!-- APP CONTENT -->
+<div class="container" id="appContent" style="display:none;">
+
+  <!-- PITCH SECTION -->
+  <div id="pitchSection" class="section">
+    <div id="formationTabs" style="display:flex; gap:5px; margin-bottom:10px;"></div>
+    <div id="playStyles" style="display:flex; gap:5px; margin-bottom:10px;"></div>
+    <div class="pitch-area" id="pitch"></div>
+  </div>
+
+  <!-- PLAYER SECTION -->
+  <div id="playerSection" class="section">
+    <h3>Manage Players</h3>
+    <div id="playerFormContainer">
+      <div id="playerList"></div>
+    </div>
+  </div>
+
+  <!-- MONEY SECTION -->
+  <div id="moneySection" class="section">
+    <h3>Wallet / Paystack</h3>
+    <button id="buyPremiumWallet" class="btn-main">Add Money / Unlock Premium</button>
+    <div id="walletBalance">Balance: ₦0</div>
+  </div>
+
+  <!-- AI MANAGER SECTION -->
+  <div id="aiSection" class="section">
+    <h3>AI Manager</h3>
+    <input id="managerAIInput" placeholder="Ask AI (Best striker, formation, sub...)">
+    <button class="btn-main" onclick="managerAI()">Ask AI</button>
+    <div id="managerAIResult" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
+  </div>
+
+  <!-- SETTINGS SECTION -->
+  <div id="settingsSection" class="section">
+    <h3>Settings</h3>
+    <p>Change theme colors, pitch color, card styles, etc.</p>
+  </div>
+
 </div>
 
 <!-- FIREBASE -->
@@ -188,224 +107,173 @@ input {
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
   authDomain: "money-app-bac4c.firebaseapp.com",
   projectId: "money-app-bac4c",
-  storageBucket: "money-app-bac4c.appspot.com",
+  storageBucket: "money-app-bac4c.firebasestorage.app",
   messagingSenderId: "663419222795",
   appId: "1:663419222795:web:1ad595d41854f3cc45000e"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
 
-// PLAYERS DATA
-let starters = [
-  {name:"Player1", position:"GK", rating:101, matchesPlayed:50, stamina:90, role:"Keeper", preferredFoot:"Right"},
-  {name:"Player2", position:"LB", rating:95, matchesPlayed:80, stamina:85, role:"Defender", preferredFoot:"Left"},
-  {name:"Player3", position:"CB", rating:100, matchesPlayed:120, stamina:92, role:"Defender", preferredFoot:"Right"},
-  {name:"Player4", position:"CB", rating:99, matchesPlayed:100, stamina:91, role:"Defender", preferredFoot:"Right"},
-  {name:"Player5", position:"RB", rating:98, matchesPlayed:90, stamina:88, role:"Defender", preferredFoot:"Right"},
-  {name:"Player6", position:"CMF", rating:102, matchesPlayed:110, stamina:95, role:"Box-to-Box", preferredFoot:"Right"},
-  {name:"Player7", position:"CMF", rating:100, matchesPlayed:105, stamina:93, role:"Playmaker", preferredFoot:"Left"},
-  {name:"Player8", position:"CMF", rating:101, matchesPlayed:115, stamina:92, role:"Defensive", preferredFoot:"Right"},
-  {name:"Player9", position:"LW", rating:103, matchesPlayed:95, stamina:96, role:"Winger", preferredFoot:"Left"},
-  {name:"Player10", position:"CF", rating:105, matchesPlayed:100, stamina:97, role:"Striker", preferredFoot:"Right"},
-  {name:"Player11", position:"RW", rating:104, matchesPlayed:90, stamina:94, role:"Winger", preferredFoot:"Right"}
-];
-
-let substitutes = [
-  {name:"Sub1", position:"GK", rating:92, matchesPlayed:30, stamina:85, role:"Keeper", preferredFoot:"Right"},
-  {name:"Sub2", position:"CB", rating:95, matchesPlayed:50, stamina:88, role:"Defender", preferredFoot:"Right"},
-  {name:"Sub3", position:"CMF", rating:98, matchesPlayed:40, stamina:90, role:"Box-to-Box", preferredFoot:"Right"},
-  {name:"Sub4", position:"CF", rating:100, matchesPlayed:60, stamina:92, role:"Striker", preferredFoot:"Left"},
-  {name:"Sub5", position:"RW", rating:97, matchesPlayed:45, stamina:90, role:"Winger", preferredFoot:"Right"}
-];
-
-// HELPER FUNCTIONS
-function createPlayerCard(player){
-  const card = document.createElement('div');
-  card.className = 'player-card';
-  card.innerHTML = `
-    <span class="pos-label">${player.position}</span>
-    <span class="p-name">${player.name}</span>
-    <div class="tooltip">
-      Rating: ${player.rating}<br>
-      Matches: ${player.matchesPlayed}<br>
-      Stamina: ${player.stamina}<br>
-      Role: ${player.role}<br>
-      Foot: ${player.preferredFoot}
-    </div>
-  `;
-  if(player.rating>100) card.style.borderBottom='4px solid gold';
-  else if(player.rating>90) card.style.borderBottom='4px solid lightgreen';
-  else card.style.borderBottom='4px solid yellow';
-  return card;
-}
-
-function renderPitch(){
-  const pitch = document.getElementById('pitch');
-  pitch.innerHTML='';
-  const formation = [
-    starters.slice(0,1),
-    starters.slice(1,5),
-    starters.slice(5,8),
-    starters.slice(8,11)
-  ];
-  formation.forEach(row=>{
-    const rowDiv = document.createElement('div');
-    rowDiv.className='position-row';
-    row.forEach(player=>{
-      rowDiv.appendChild(createPlayerCard(player));
-    });
-    pitch.appendChild(rowDiv);
-  });
-
-  const subsRow = document.getElementById('subs');
-  subsRow.innerHTML='';
-  substitutes.forEach(player=>subsRow.appendChild(createPlayerCard(player)));
-}
-
-// ===== UPDATE FORMATION & AI HIGHLIGHTS =====
-function updateFormation(){
-  const pitchCards = document.querySelectorAll('.position-row .player-card');
-  starters = Array.from(pitchCards).map(card=>{
-    const name = card.querySelector('.p-name').textContent;
-    return [...starters,...substitutes].find(p=>p.name===name);
-  });
-  highlightSubstitute(); // update sub recommendation automatically
-}
-
-// ===== BEST POSITION HIGHLIGHT =====
-function clearHighlights() {
-  document.querySelectorAll('.player-card').forEach(card=>{
-    card.classList.remove('highlight-slot');
-  });
-}
-
-function highlightBestPosition(playerName) {
-  clearHighlights();
-  const allPlayers = [...document.querySelectorAll('.position-row .player-card')];
-  const playerData = [...starters, ...substitutes].find(p=>p.name === playerName);
-  if(!playerData) return;
-
-  let bestCard = allPlayers.find(c=>{
-    const pos = c.querySelector('.pos-label').textContent;
-    return pos === playerData.position;
-  });
-
-  if(!bestCard){
-    bestCard = allPlayers.reduce((lowest, c)=>{
-      const rating = [...starters,...substitutes].find(p=>p.name===c.querySelector('.p-name').textContent).rating;
-      const lowestRating = [...starters,...substitutes].find(p=>p.name===lowest.querySelector('.p-name').textContent).rating;
-      return rating < lowestRating ? c : lowest;
-    }, allPlayers[0]);
-  }
-
-  if(bestCard) bestCard.classList.add('highlight-slot');
-}
-
-// ===== SUBSTITUTE RECOMMENDATION =====
-function clearSubRecommendations() {
-  document.querySelectorAll('.player-card').forEach(card=>{
-    card.classList.remove('sub-recommend');
-  });
-}
-
-function highlightSubstitute() {
-  clearSubRecommendations();
-
-  const weakestStarter = starters.reduce((lowest, player) => player.rating < lowest.rating ? player : lowest, starters[0]);
-
-  const bestSub = substitutes.filter(sub=>sub.rating > weakestStarter.rating)
-                             .find(sub=>sub.position === weakestStarter.position);
-
-  if(bestSub){
-    const subCard = [...document.querySelectorAll('#subs .player-card')]
-                    .find(card => card.querySelector('.p-name').textContent === bestSub.name);
-    if(subCard) subCard.classList.add('sub-recommend');
-
-    const starterCard = [...document.querySelectorAll('.position-row .player-card')]
-                        .find(card => card.querySelector('.p-name').textContent === weakestStarter.name);
-    if(starterCard) starterCard.classList.add('sub-recommend');
-  }
-}
-
-// ===== FIREBASE LOGIN =====
-async function sendLoginLink(){
+/* ========================== LOGIN ========================== */
+async function sendLoginLink() {
   const emailInput = document.getElementById("email").value.trim();
-  const actionCodeSettings = {url: window.location.href, handleCodeInApp:true};
-  try{
-    await auth.sendSignInLinkToEmail(emailInput,actionCodeSettings);
-    window.localStorage.setItem('emailForSignIn',emailInput);
-    document.getElementById("authMsg").innerText="Check your Gmail! We sent a login link.";
-    document.getElementById("email").style.display="none";
-  }catch(error){document.getElementById("authError").innerText=error.message;}
+  const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+  try {
+    await auth.sendSignInLinkToEmail(emailInput, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', emailInput);
+    document.getElementById("authMsg").innerText = "Check your Gmail! We sent a login link.";
+    document.getElementById("email").style.display = "none";
+  } catch (error) { document.getElementById("authError").innerText = error.message; }
 }
 
-async function completeSignIn(){
-  if(auth.isSignInWithEmailLink(window.location.href)){
-    let email = window.localStorage.getItem('emailForSignIn');
-    if(!email) email=window.prompt('Please provide your email');
-    try{
-      await auth.signInWithEmailLink(email, window.location.href);
-      window.localStorage.removeItem('emailForSignIn');
-    }catch(e){alert(e.message);}
+async function completeSignIn() {
+  if (auth.isSignInWithEmailLink(window.location.href)) {
+    let email = window.localStorage.getItem('emailForSignIn') || window.prompt('Please provide your email for confirmation');
+    try { await auth.signInWithEmailLink(email, window.location.href); window.localStorage.removeItem('emailForSignIn'); } 
+    catch (error) { alert(error.message); }
   }
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    document.getElementById("authOverlay").style.display="none";
-    document.getElementById("appContent").style.display="block";
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById("authOverlay").style.display = "none";
+    document.getElementById("mainNav").style.display = "flex";
+    document.getElementById("appContent").style.display = "block";
+    renderFormationTabs();
+    renderPlayStyles();
+    renderPlayerList();
     renderPitch();
-    attachSortable(); // initialize drag & drop + AI
-    highlightSubstitute(); // suggest initial sub
   } else { completeSignIn(); }
 });
 
-// ===== PAYSTACK =====
-const paystackPublicKey = "YOUR_PK_HERE";
-document.getElementById('buyPremium').addEventListener('click',()=>{
-  const user = auth.currentUser;
-  if(!user) return alert("Login first");
-  let handler = PaystackPop.setup({
-    key: paystackPublicKey,
-    email: user.email,
-    amount: 1000*100,
-    currency:"NGN",
-    ref:''+Math.floor(Math.random()*1000000000+1),
-    callback:function(res){
-      alert('Payment complete! Reference: '+res.reference);
-      document.body.classList.add('premium');
-    },
-    onClose:function(){alert('Transaction closed.');}
-  });
-  handler.openIframe();
-});
+function logout(){ auth.signOut().then(()=>location.reload()); }
 
-// ===== SORTABLE + AI HIGHLIGHTS + SUB RECOMMEND =====
-function attachSortable(){
-  document.querySelectorAll('.position-row, #subs').forEach(row=>{
-    if(!row._aiSortableAttached){
-      Sortable.create(row, {
-        group: 'players',
-        animation: 150,
-        ghostClass: 'ghost',
-        onStart: function(evt){
-          const playerName = evt.item.querySelector('.p-name').textContent;
-          highlightBestPosition(playerName);
-        },
-        onEnd: function(evt){
-          updateFormation();
-        }
-      });
-      row._aiSortableAttached = true;
-    }
+/* ========================== PITCH / PLAYER DATA ========================== */
+let starters = [
+  {name:"Player1",position:"GK",rating:105,role:"Goalkeeper",matchesPlayed:5,stamina:90},
+  {name:"Player2",position:"RB",rating:102,role:"Defender",matchesPlayed:5,stamina:88},
+  {name:"Player3",position:"CB",rating:104,role:"Defender",matchesPlayed:5,stamina:92},
+  {name:"Player4",position:"CB",rating:103,role:"Defender",matchesPlayed:5,stamina:91},
+  {name:"Player5",position:"LB",rating:101,role:"Defender",matchesPlayed:5,stamina:87},
+  {name:"Player6",position:"CMF",rating:106,role:"Midfielder",matchesPlayed:5,stamina:93},
+  {name:"Player7",position:"CMF",rating:104,role:"Midfielder",matchesPlayed:5,stamina:91},
+  {name:"Player8",position:"AMF",rating:102,role:"Midfielder",matchesPlayed:5,stamina:89},
+  {name:"Player9",position:"RW",rating:107,role:"Forward",matchesPlayed:5,stamina:95},
+  {name:"Player10",position:"ST",rating:108,role:"Forward",matchesPlayed:5,stamina:97},
+  {name:"Player11",position:"LW",rating:106,role:"Forward",matchesPlayed:5,stamina:94}
+];
+let substitutes = [
+  {name:"Sub1",position:"GK",rating:95,role:"Goalkeeper",matchesPlayed:2,stamina:80},
+  {name:"Sub2",position:"CB",rating:97,role:"Defender",matchesPlayed:2,stamina:85},
+  {name:"Sub3",position:"CMF",rating:98,role:"Midfielder",matchesPlayed:2,stamina:84},
+  {name:"Sub4",position:"ST",rating:99,role:"Forward",matchesPlayed:2,stamina:86}
+];
+
+/* ========================== FORMATIONS ========================== */
+let formations = ['4-4-2','4-3-3','4-2-3-1','3-5-2','5-3-2','3-4-3','4-1-2-1-2'];
+let userFormations = [];
+let currentFormation = '4-3-3';
+
+function renderFormationTabs(){
+  const container = document.getElementById('formationTabs');
+  container.innerHTML='';
+  formations.concat(userFormations).forEach(f=>{
+    const btn=document.createElement('button');
+    btn.innerText=f; btn.onclick=()=>setFormation(f);
+    container.appendChild(btn);
+  });
+  const customBtn=document.createElement('button');
+  customBtn.innerText='Create Formation'; customBtn.onclick=()=>createCustomFormation();
+  container.appendChild(customBtn);
+}
+
+function createCustomFormation(){
+  const name=prompt('Name your custom formation:'); if(!name) return;
+  userFormations.push(name); renderFormationTabs(); setFormation(name);
+}
+
+function setFormation(f){ currentFormation=f; renderPitch(); document.getElementById('managerAIResult').innerText=`Formation set to ${f}`; }
+
+/* ========================== PLAY STYLES ========================== */
+let playStyles = ['Possession','Counter','High Press','Balanced'];
+let currentPlayStyle='Balanced';
+
+function renderPlayStyles(){
+  const container = document.getElementById('playStyles');
+  container.innerHTML='';
+  playStyles.forEach(s=>{
+    const btn=document.createElement('button');
+    btn.innerText=s; btn.onclick=()=>setPlayStyle(s);
+    container.appendChild(btn);
   });
 }
-</script>
-</body>
-</html>
+
+function setPlayStyle(s){ currentPlayStyle=s; document.getElementById('managerAIResult').innerText=`Play style: ${s}`; highlightSubstitute(); }
+
+/* ========================== PLAYER MANAGEMENT ========================== */
+function renderPlayerList(){
+  const container=document.getElementById('playerList'); container.innerHTML='';
+  [...starters,...substitutes].forEach(p=>{
+    const div=document.createElement('div');
+    div.style.border='1px solid #555'; div.style.padding='10px'; div.style.margin='5px'; div.style.borderRadius='8px';
+    div.innerHTML=`<b>${p.name}</b> (${p.position})<br>
+      Rating: <input type="number" min="0" value="${p.rating}" style="width:50px" onchange="updatePlayerStat('${p.name}','rating',this.value)">
+      Matches: <input type="number" min="0" value="${p.matchesPlayed}" style="width:50px" onchange="updatePlayerStat('${p.name}','matchesPlayed',this.value)">
+      Stamina: <input type="number" min="0" value="${p.stamina}" style="width:50px" onchange="updatePlayerStat('${p.name}','stamina',this.value)">`;
+    container.appendChild(div);
+  });
+}
+
+function updatePlayerStat(name,field,value){
+  let p=starters.find(p=>p.name===name)||substitutes.find(p=>p.name===name);
+  if(p) p[field]=Number(value); renderPitch(); highlightSubstitute();
+}
+
+/* ========================== PITCH RENDER ========================== */
+function renderPitch(){
+  const pitch=document.getElementById('pitch'); pitch.innerHTML='';
+  let formationRows = getFormationRows(currentFormation);
+  formationRows.forEach(row=>{
+    const rowDiv=document.createElement('div'); rowDiv.className='position-row';
+    row.forEach(pos=>{
+      let player=[...starters,...substitutes].find(p=>p.position===pos);
+      const card=document.createElement('div'); card.className='player-card';
+      card.innerHTML=`<span class="pos-label">${pos}</span><span class="p-name">${player?player.name:pos}</span>`;
+      rowDiv.appendChild(card);
+    });
+    pitch.appendChild(rowDiv);
+  });
+}
+
+function getFormationRows(f){
+  switch(f){
+    case '4-4-2': return [['GK'],['LB','CB','CB','RB'],['LMF','CMF','CMF','RMF'],['ST','ST']];
+    case '4-3-3': return [['GK'],['LB','CB','CB','RB'],['CMF','CMF','CMF'],['LW','ST','RW']];
+    case '4-2-3-1': return [['GK'],['LB','CB','CB','RB'],['CMF','CMF'],['LAMF','AMF','RAMF'],['ST']];
+    case '3-5-2': return [['GK'],['CB','CB','CB'],['LMF','CMF','CMF','CMF','RMF'],['ST','ST']];
+    case '5-3-2': return [['GK'],['LWB','CB','CB','CB','RWB'],['CMF','CMF','CMF'],['ST','ST']];
+    case '3-4-3': return [['GK'],['CB','CB','CB'],['LMF','CMF','RMF','AMF'],['LW','ST','RW']];
+    case '4-1-2-1-2': return [['GK'],['LB','CB','CB','RB'],['CDM'],['CMF','CMF'],['AMF'],['ST','ST']];
+    default: return [['GK'],['LB','CB','CB','RB'],['CMF','CMF','CMF'],['LW','ST','RW']];
+  }
+}
+
+/* ========================== AI MANAGER ========================== */
+function managerAI(){
+  const q=document.getElementById('managerAIInput').value.toLowerCase(); let ans="I couldn't understand the question.";
+  if(q.includes("best striker")){ const s=[...starters,...substitutes].filter(p=>p.role.includes('Forward')); const best=s.reduce((a,b)=>b.rating>a.rating?b:a,s[0]); ans=`Best striker: ${best.name} rating ${best.rating}`;}
+  else if(q.includes("formation")){ ans=`Based on your squad, ${currentFormation} suits best.`;}
+  else if(q.includes("substitute")){ const weak=starters.reduce((a,b)=>b.rating<a.rating?b:a,starters[0]); const bestSub=substitutes.filter(s=>s.rating>weak.rating)[0]; ans=`Sub ${weak.name} with ${bestSub.name}`;}
+  else if(q.includes("play style")){ ans=`For ${currentPlayStyle}, strengthen midfield and wings.`;}
+  document.getElementById('managerAIResult').innerText=ans;
+}
+
+/* ========================== SUB AI HIGHLIGHT ========================== */
+function highlightSubstitute(){
+  // Simple AI: highlight lowest starter and best sub
+  const pitchCards=document.querySelectorAll('.player-card'); pitchCards.forEach(c=>c.classList.remove('highlight-slot'));
+  const weakStarter=starters.reduce((a,b)=>b.rating<a.rating?b:a,starters[0]);
