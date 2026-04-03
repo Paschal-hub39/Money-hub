@@ -1,18 +1,20 @@
 {
-  "short_name": "MoneyHub",
-  "name": "Money Ideas Hub",
-  "description": "Share and discover innovative money-making strategies.",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/2489/2489756.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
-    }
-  ],
+  "name": "Paschala Hub",
+  "short_name": "Paschala",
   "start_url": "index.html",
   "display": "standalone",
-  "theme_color": "#0f0f14",
   "background_color": "#0f0f14",
-  "orientation": "portrait"
+  "theme_color": "#ff4da6",
+  "icons": [
+    {
+      "src": "ei_1775215120589-removebg-preview_1~2.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "ei_1775215120589-removebg-preview_1~2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
