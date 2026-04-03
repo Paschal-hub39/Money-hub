@@ -3,34 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paschala Hub | eFootball Master</title>
+<title>Paschala Hub | Tactical & Profit</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
   :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; }
-  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; overflow-x: hidden; }
+  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
+  
+  /* Auth Overlay */
+  #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
   
   .container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
   .tab-content { display: none; animation: fadeIn 0.3s; }
   .active-tab { display: block; }
 
-  /* FIX: Pitch Row Spacing */
+  /* Pitch & Player Styles */
   .pitch-area { 
     background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; 
-    min-height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0;
-    background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px); background-size: 100% 40px;
+    height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px 0;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 44px, rgba(255,255,255,0.03) 45px);
   }
   .position-row { display: flex; justify-content: center; gap: 10px; width: 100%; min-height: 80px; align-items: center; }
   
   .player-card { 
-    background: #fff; color: #000; border-radius: 4px; width: 60px; padding: 5px;
-    text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-bottom: 3px solid var(--pos-bg);
+    background: #fff; color: #000; border-radius: 4px; width: 62px; padding: 5px;
+    text-align: center; cursor: pointer; border-bottom: 4px solid var(--pos-bg);
   }
-  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; border-radius: 2px; }
-  .p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; color: #111; }
+  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; }
+  .p-name { font-size: 0.6rem; font-weight: bold; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; }
 
-  /* G/A & Subs Section */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-  .stat-item { background: #252530; padding: 10px; border-radius: 8px; font-size: 0.8rem; border-left: 3px solid var(--accent); }
+  /* Modals */
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 4000; align-items: center; justify-content: center; padding: 20px; }
+  .modal-content { background: var(--card-bg); padding: 25px; border-radius: 15px; width: 100%; border: 1px solid var(--primary); text-align: center; }
 
   input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
   .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
@@ -43,48 +46,67 @@
 </head>
 <body>
 
-<div id="squadTab" class="tab-content active-tab">
-  <div class="container" style="background: linear-gradient(to right, #16161d, #283593);">
-    <h3 style="margin:0;">Tactical Manager Hub</h3>
-    <p id="managerAdvice" style="font-size:0.8rem; color:var(--accent);">Select a formation to see the AI Advice...</p>
+<div id="authOverlay">
+  <div class="container" style="width:100%; max-width:400px;">
+    <h2 style="text-align:center; color:var(--primary);">Paschala Hub</h2>
+    <p style="text-align:center; font-size:0.8rem; margin-bottom:20px;">Login to manage your Squad & Ideas</p>
+    <input id="email" type="email" placeholder="Email Address">
+    <input id="pass" type="password" placeholder="Password">
+    <button class="btn-main" onclick="handleAuth('signup')">CREATE ACCOUNT</button>
+    <button class="btn-main" style="background:#333; margin-top:10px;" onclick="handleAuth('login')">LOGIN</button>
+    <p id="authError" style="color:red; font-size:0.7rem; margin-top:10px; text-align:center;"></p>
   </div>
+</div>
 
-  <div class="container">
-    <select id="formationInput" onchange="renderPitch()">
-      <option value="4-3-1-2">4-3-1-2 (Diamond - Best for G. Zeitzler)</option>
-      <option value="4-2-1-3">4-2-1-3 (Offensive - Best for Xabi Alonso)</option>
-      <option value="4-2-2-2">4-2-2-2 (Counter - Best for Capello)</option>
-    </select>
-    <div class="pitch-area" id="pitchLayout"></div>
-  </div>
-
-  <div class="container">
-    <h3>Register Player / Sub</h3>
-    <input id="playerName" placeholder="Player Name">
-    <div style="display:flex; gap:5px;">
-      <input id="goalsInput" type="number" placeholder="Goals" style="width:50%">
-      <input id="assistsInput" type="number" placeholder="Assists" style="width:50%">
+<div id="statModal" class="modal" onclick="this.style.display='none'">
+  <div class="modal-content">
+    <h2 id="mName" style="color:var(--primary);"></h2>
+    <div style="display:flex; justify-content:space-around; margin:20px 0;">
+      <div><h1 id="mG" style="color:var(--accent); margin:0;">0</h1><p>Goals</p></div>
+      <div><h1 id="mA" style="color:var(--accent); margin:0;">0</h1><p>Assists</p></div>
     </div>
-    <select id="playerPosition">
+    <div id="mAdvice" style="background:#000; padding:15px; border-radius:10px; font-size:0.85rem; border-left:4px solid var(--accent);"></div>
+    <button class="btn-main" style="margin-top:20px;">CLOSE</button>
+  </div>
+</div>
+
+<div id="squadTab" class="tab-content active-tab">
+  <div class="container">
+    <select id="formSelect" onchange="renderPitch()">
+      <option value="4-3-1-2">4-3-1-2 (Diamond - Capello)</option>
+      <option value="4-2-1-3">4-2-1-3 (Offensive - Alonso)</option>
+      <option value="4-2-2-2">4-2-2-2 (Standard - Zeitzler)</option>
+    </select>
+    <div class="pitch-area" id="pitch"></div>
+  </div>
+
+  <div class="container">
+    <h3>Add Player</h3>
+    <input id="pName" placeholder="Player Name">
+    <div style="display:flex; gap:5px;">
+      <input id="pG" type="number" placeholder="Goals">
+      <input id="pA" type="number" placeholder="Assists">
+    </div>
+    <select id="pPos">
       <option value="CF">CF</option><option value="SS">SS</option><option value="AMF">AMF</option>
       <option value="LWF">LWF</option><option value="RWF">RWF</option><option value="CMF">CMF</option>
       <option value="DMF">DMF</option><option value="CB">CB</option><option value="GK">GK</option>
-      <option value="SUB">SUB (Bench)</option>
+      <option value="SUB">BENCH (Reserve)</option>
     </select>
-    <button class="btn-main" onclick="addPlayer()">ADD TO SQUAD</button>
+    <button class="btn-main" onclick="savePlayer()">ADD TO SQUAD</button>
   </div>
-
-  <div class="container">
-    <h3>🔄 Bench & G/A Stats</h3>
-    <div id="subsDisplay" class="stats-grid"></div>
+  
+  <div class="container" id="benchSection" style="display:none;">
+    <h3>🔄 Bench</h3>
+    <div id="benchList" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
   </div>
 </div>
 
 <div id="moneyTab" class="tab-content">
   <div class="container">
     <h2>💸 Money Strategies</h2>
-    <input id="ideaInput" placeholder="Enter a profit idea...">
-    <button class="btn-main" onclick="saveIdea()">SHARE STRATEGY</button>
+    <input id="ideaInput" placeholder="Share a profit idea...">
+    <button class="btn-main" onclick="saveIdea()">POST IDEA</button>
   </div>
   <div id="ideasDisplay"></div>
 </div>
@@ -92,6 +114,7 @@
 <nav class="bottom-nav">
   <div class="nav-item active" onclick="switchTab('squadTab', this)"><i class="fas fa-tshirt"></i>Squad</div>
   <div class="nav-item" onclick="switchTab('moneyTab', this)"><i class="fas fa-wallet"></i>Money</div>
+  <div class="nav-item" onclick="auth.signOut()"><i class="fas fa-sign-out-alt"></i>Logout</div>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -111,45 +134,72 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function switchTab(id, el) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(id).classList.add('active-tab');
-  el.classList.add('active');
+// 1. AUTH LOGIC
+async function handleAuth(type) {
+  const e = document.getElementById("email").value;
+  const p = document.getElementById("pass").value;
+  try {
+    if(type === 'signup') await auth.createUserWithEmailAndPassword(e, p);
+    else await auth.signInWithEmailAndPassword(e, p);
+  } catch(err) { document.getElementById("authError").innerText = err.message; }
 }
 
-async function addPlayer() {
-  const name = document.getElementById("playerName").value;
-  const pos = document.getElementById("playerPosition").value;
-  const g = document.getElementById("goalsInput").value || 0;
-  const a = document.getElementById("assistsInput").value || 0;
-  if(!name || !auth.currentUser) return;
-  await db.collection("squads").add({ uid: auth.currentUser.uid, name, pos, g, a, timestamp: Date.now() });
-  document.getElementById("playerName").value = "";
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById("authOverlay").style.display = "none";
+    renderPitch();
+    loadIdeas();
+  } else {
+    document.getElementById("authOverlay").style.display = "flex";
+  }
+});
+
+// 2. SQUAD LOGIC
+async function savePlayer() {
+  const name = document.getElementById("pName").value;
+  const pos = document.getElementById("pPos").value;
+  const g = document.getElementById("pG").value || 0;
+  const a = document.getElementById("pA").value || 0;
+  if(!name) return;
+  await db.collection("squads").add({ uid: auth.currentUser.uid, name, pos, g, a, time: Date.now() });
+  document.getElementById("pName").value = "";
+}
+
+function showStats(p) {
+  document.getElementById("mName").innerText = p.name;
+  document.getElementById("mG").innerText = p.g;
+  document.getElementById("mA").innerText = p.a;
+  
+  const tips = {
+    "CF": "Target Man style works best for " + p.name + " in 4-3-1-2.",
+    "LWF": "Try a Prolific Winger build. Great with Xabi Alonso.",
+    "AMF": "Hole Player role will make " + p.name + " join the attack more.",
+    "SUB": "Use as a Super-sub after 70' for massive stat boosts!"
+  };
+  document.getElementById("mAdvice").innerText = tips[p.pos] || "Solid tactical fit for your " + p.pos + " role.";
+  document.getElementById("statModal").style.display = "flex";
 }
 
 function renderPitch() {
-  const formation = document.getElementById("formationInput").value;
-  const pitch = document.getElementById("pitchLayout");
-  const adv = document.getElementById("managerAdvice");
-
-  if(formation === "4-3-1-2") adv.innerText = "AI Advice: Use Fabio Capello for Long Ball Counter. Focus on your AMF feeding Batistuta.";
-  if(formation === "4-2-1-3") adv.innerText = "AI Advice: Xabi Alonso's Possession Game works best here. Use Hazard on the wings.";
-
   db.collection("squads").where("uid", "==", auth.currentUser.uid).onSnapshot(snap => {
-    pitch.innerHTML = "";
-    document.getElementById("subsDisplay").innerHTML = "";
+    const pitch = document.getElementById("pitch");
+    const bench = document.getElementById("benchList");
+    pitch.innerHTML = ""; bench.innerHTML = "";
+    
     const rows = { atk: ["CF", "SS", "LWF", "RWF"], mid: ["AMF", "CMF", "DMF"], def: ["CB", "LB", "RB"], gk: ["GK"] };
 
     Object.keys(rows).forEach(key => {
       let rowDiv = document.createElement("div"); rowDiv.className = "position-row";
       snap.forEach(doc => {
-        const p = doc.data();
-        if(rows[key].includes(p.pos)) {
-          rowDiv.innerHTML += `<div class="player-card"><span class="pos-label">${p.pos}</span><span class="p-name">${p.name}</span></div>`;
+        const data = doc.data();
+        if(rows[key].includes(data.pos)) {
+          rowDiv.innerHTML += `<div class="player-card" onclick='showStats(${JSON.stringify(data)})'>
+            <span class="pos-label">${data.pos}</span><span class="p-name">${data.name}</span></div>`;
         }
-        if(p.pos === "SUB") {
-          document.getElementById("subsDisplay").innerHTML += `<div class="stat-item"><strong>${p.name}</strong><br>G/A: ${p.g}/${p.a}</div>`;
+        if(data.pos === "SUB") {
+          document.getElementById("benchSection").style.display = "block";
+          bench.innerHTML += `<div class="container" style="margin:0; padding:10px;" onclick='showStats(${JSON.stringify(data)})'>
+            <small style="color:var(--accent)">SUB</small><br><strong>${data.name}</strong></div>`;
         }
       });
       pitch.appendChild(rowDiv);
@@ -157,21 +207,30 @@ function renderPitch() {
   });
 }
 
+// 3. MONEY LOGIC
 function saveIdea() {
   const text = document.getElementById("ideaInput").value;
   db.collection("ideas").add({ text, user: auth.currentUser.email, time: Date.now() });
+  document.getElementById("ideaInput").value = "";
 }
 
-db.collection("ideas").orderBy("time", "desc").onSnapshot(snap => {
-  const display = document.getElementById("ideasDisplay");
-  display.innerHTML = "";
-  snap.forEach(doc => {
-    const d = doc.data();
-    display.innerHTML += `<div class="container"><strong>${d.text}</strong><br><small>${d.user}</small></div>`;
+function loadIdeas() {
+  db.collection("ideas").orderBy("time", "desc").onSnapshot(snap => {
+    const feed = document.getElementById("ideasDisplay");
+    feed.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      feed.innerHTML += `<div class="container"><strong>${d.text}</strong><br><small style="color:var(--primary)">${d.user}</small></div>`;
+    });
   });
-});
+}
 
-auth.onAuthStateChanged(user => { if (user) renderPitch(); else auth.signInAnonymously(); });
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active-tab');
+  el.classList.add('active');
+}
 </script>
 </body>
 </html>
