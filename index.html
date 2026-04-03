@@ -3,92 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Money Ideas Hub</title>
-
 <link rel="manifest" href="manifest.json">
 
 <style>
-body {
-  margin:0;
-  font-family: Arial;
-  background:#0f0f14;
-  color:white;
-}
-
-header {
-  text-align:center;
-  padding:20px;
-  border-bottom:2px solid #ff4da6;
-}
-
-input, button {
-  padding:10px;
-  margin:5px;
-  border:none;
-  border-radius:8px;
-}
-
-button {
-  background:#ff4da6;
-  color:white;
-  cursor:pointer;
-}
-
-.container {
-  padding:20px;
-}
-
-.card {
-  background:#1a1a22;
-  padding:15px;
-  margin:10px 0;
-  border-radius:10px;
-}
+  body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#0f0f14; color:white; }
+  header { text-align:center; padding:30px 20px; border-bottom:3px solid #ff4da6; background: #16161d; }
+  input, button { padding:12px; margin:8px 0; border:none; border-radius:8px; font-size: 16px; width: 100%; box-sizing: border-box; }
+  input { background: #2a2a35; color: white; border: 1px solid #3f3f4e; }
+  button { background:#ff4da6; color:white; cursor:pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+  button:active { transform: scale(0.98); }
+  .container { padding:25px 20px; border-bottom: 1px solid #2a2a35; max-width: 500px; margin: auto; }
+  .card { background:#1a1a22; padding:15px; margin:15px 0; border-radius:10px; border-left: 5px solid #ff4da6; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  #userInfo { color: #ff4da6; margin-top: 10px; font-weight: bold; text-align: center; }
+  h2 { font-size: 1.2rem; color: #cccccc; margin-bottom: 15px; }
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>💸 Money Ideas Hub</h1>
-<p>Azubuike Paschal Kamsiyochukwu</p>
-<p>📞 +2349161362962</p>
+  <h1>💸 Money Ideas Hub</h1>
+  <p><strong>Azubuike Paschal Kamsiyochukwu</strong></p>
+  <p style="font-size: 0.9rem; opacity: 0.8;">📞 +2349161362962</p>
 </header>
 
-<!-- AUTH -->
 <div class="container">
-<h2>Login / Signup</h2>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<br>
-<button onclick="signup()">Sign Up</button>
-<button onclick="login()">Login</button>
-<p id="userInfo"></p>
+  <h2>Account Login / Signup</h2>
+  <input id="regEmail" type="email" placeholder="Enter your email">
+  <input id="regPassword" type="password" placeholder="Create a password">
+  <div style="display: flex; gap: 10px;">
+    <button onclick="signup()" style="flex: 1;">Sign Up</button>
+    <button onclick="login()" style="flex: 1; background: #3f3f4e;">Login</button>
+  </div>
+  <p id="userInfo">Status: Connecting...</p>
 </div>
 
-<!-- ADD IDEA -->
 <div class="container">
-<h2>Add Idea</h2>
-<input id="ideaInput" placeholder="Enter money idea">
-<button onclick="saveIdea()">Save</button>
+  <h2>Share a Money Idea</h2>
+  <input id="ideaInput" placeholder="Describe your money-making idea...">
+  <button onclick="saveIdea()">Post Idea</button>
 </div>
 
-<!-- IDEAS LIST -->
 <div class="container">
-<h2>Ideas</h2>
-<div id="ideas"></div>
+  <h2>Community Ideas Feed</h2>
+  <div id="ideasDisplay"></div>
 </div>
 
-<!-- PAY -->
-<div class="container">
-<button onclick="pay()">💰 Go Premium</button>
+<div class="container" style="text-align: center;">
+  <button onclick="pay()" style="background: linear-gradient(45deg, #ff4da6, #8000ff); padding: 20px;">
+    💎 UNLOCK PREMIUM FEATURES
+  </button>
 </div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -97,80 +68,88 @@ const firebaseConfig = {
   projectId: "money-app-bac4c",
   storageBucket: "money-app-bac4c.firebasestorage.app",
   messagingSenderId: "663419222795",
-  appId: "1:663419222795:web:1ad595d41854f3cc45000e"
+  appId: "1:663419222795:web:1ad595d41854f3cc45000e",
+  measurementId: "G-F5VM9FQW5K"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* AUTH */
 function signup() {
-  let email = emailInput.value;
-  let password = password.value;
-
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPassword").value;
+  if(!email || !password) return alert("Please fill fields");
   auth.createUserWithEmailAndPassword(email, password)
-    .then(()=>alert("Account created"))
-    .catch(err=>alert(err.message));
+    .then(() => alert("Account ready!"))
+    .catch(err => alert(err.message));
 }
 
 function login() {
-  let email = emailInput.value;
-  let password = password.value;
-
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPassword").value;
   auth.signInWithEmailAndPassword(email, password)
-    .then(()=>alert("Logged in"))
-    .catch(err=>alert(err.message));
+    .then(() => alert("Welcome back!"))
+    .catch(err => alert(err.message));
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    userInfo.innerText = "Logged in as " + user.email;
+auth.onAuthStateChanged(user => {
+  const status = document.getElementById("userInfo");
+  if (user) {
+    status.innerText = "Logged in as: " + user.email;
+    status.style.color = "#00ff88";
+  } else {
+    status.innerText = "Not logged in";
+    status.style.color = "#ff4da6";
   }
 });
 
-/* SAVE IDEA */
-function saveIdea(){
-  let idea = ideaInput.value;
-
+function saveIdea() {
+  const ideaText = document.getElementById("ideaInput").value;
+  const user = auth.currentUser;
+  if (!user) return alert("Sign in first!");
+  if (!ideaText) return alert("Enter an idea.");
   db.collection("ideas").add({
-    text: idea,
-    time: new Date()
-  }).then(()=>{
+    text: ideaText,
+    userEmail: user.email,
+    time: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    document.getElementById("ideaInput").value = ""; 
     alert("Saved!");
-  });
+  }).catch(err => alert(err.message));
 }
 
-/* LOAD IDEAS */
 db.collection("ideas")
-.orderBy("time","desc")
-.onSnapshot(snapshot=>{
-  ideas.innerHTML = "";
-  snapshot.forEach(doc=>{
-    let div = document.createElement("div");
-    div.className="card";
-    div.innerText = doc.data().text;
-    ideas.appendChild(div);
+  .orderBy("time", "desc")
+  .onSnapshot(snapshot => {
+    const ideasContainer = document.getElementById("ideasDisplay");
+    ideasContainer.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      let div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `<strong>${data.text}</strong><br><small style="opacity:0.6">By: ${data.userEmail}</small>`;
+      ideasContainer.appendChild(div);
+    });
   });
-});
 
-/* PAYSTACK */
-function pay(){
+/* PAYSTACK INTEGRATION WITH YOUR KEY */
+function pay() {
+  const user = auth.currentUser;
+  if (!user) return alert("Login to upgrade!");
+
   let handler = PaystackPop.setup({
-    key: 'YOUR_PAYSTACK_PUBLIC_KEY',
-    email: 'user@email.com',
-    amount: 200000,
+    key: 'Pk_test_184b624c480ab512a8ca799ea92fad48d6342b9a', // YOUR PUBLIC KEY
+    email: user.email,
+    amount: 200000, // 2,000 NGN
     currency: "NGN",
-    callback: function(){
-      alert("Payment successful");
+    callback: function(response) {
+      alert("Payment Success! Ref: " + response.reference);
     }
   });
   handler.openIframe();
 }
 </script>
-
-<script src="https://js.paystack.co/v1/inline.js"></script>
 
 </body>
 </html>
