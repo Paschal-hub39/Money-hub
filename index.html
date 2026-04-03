@@ -3,110 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Money Ideas Hub | Paschala</title>
-
+<title>Paschala Hub | Money & eFootball</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; }
+  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --efootball: #283593; }
   
   body { 
     margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white;
     background-image: linear-gradient(rgba(15, 15, 20, 0.95), rgba(15, 15, 20, 0.95)), 
-                      url('https://images.unsplash.com/photo-1611974714024-1595188e622b?q=80&w=1000');
+                      url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000');
     background-attachment: fixed; background-size: cover; padding-bottom: 80px;
   }
 
-  header { text-align:center; padding:30px 20px; border-bottom: 2px solid var(--primary); background: rgba(22, 22, 29, 0.9); }
+  header { text-align:center; padding:20px; border-bottom: 2px solid var(--primary); background: rgba(22, 22, 29, 0.9); }
   
-  .tab-content { display: none; padding: 20px; max-width: 500px; margin: auto; animation: fadeIn 0.4s ease; }
+  .tab-content { display: none; padding: 20px; max-width: 600px; margin: auto; animation: fadeIn 0.4s ease; }
   .active-tab { display: block; }
 
-  /* Navigation Bar */
-  .bottom-nav { 
-    position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #16161d; 
-    display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 1000;
-  }
-  .nav-item { color: #888; text-align: center; font-size: 0.8rem; cursor: pointer; text-decoration: none; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #16161d; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 1000; }
+  .nav-item { color: #888; text-align: center; font-size: 0.7rem; cursor: pointer; }
   .nav-item.active { color: var(--primary); }
-  .nav-item i { display: block; font-size: 1.5rem; margin-bottom: 3px; }
+  .nav-item i { display: block; font-size: 1.4rem; margin-bottom: 3px; }
 
-  .container { background: rgba(26, 26, 34, 0.8); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-  input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
+  .container { background: rgba(26, 26, 34, 0.85); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
+  input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
   
-  .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-  .btn-danger { background: #ff4d4d; }
+  .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
+  .card { background: var(--card-bg); padding: 15px; margin-top: 10px; border-radius: 12px; border-left: 4px solid var(--primary); }
 
-  /* Leaderboard Style */
-  .chart-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; }
-  .rank { color: var(--accent); font-weight: bold; }
-
-  .card { background: var(--card-bg); padding: 20px; margin-top: 15px; border-radius: 12px; border-left: 4px solid var(--primary); }
+  /* Squad UI */
+  .pitch { background: linear-gradient(#2e7d32, #1b5e20); border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 20px; text-align: center; margin-top: 10px; }
+  .player-tag { background: white; color: black; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: block; margin-top: 5px; }
+  .bench { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .sub-card { background: #333; padding: 8px; border-radius: 5px; font-size: 0.8rem; border-bottom: 2px solid var(--accent); }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
 
 <header>
-  <h1>💸 Money Ideas</h1>
-  <p id="topStatus" style="color:var(--primary); font-size: 0.8rem;">Loading connection...</p>
+  <h1>Paschala Hub</h1>
+  <p id="topStatus" style="color:var(--primary); font-size: 0.8rem;">Connecting...</p>
 </header>
 
 <div id="home" class="tab-content active-tab">
   <div class="container">
-    <h2>Post Idea</h2>
-    <input id="ideaInput" placeholder="Enter a money-making strategy...">
-    <button class="btn-main" onclick="saveIdea()">SHARE IDEA</button>
+    <h2>💸 Money Strategies</h2>
+    <input id="ideaInput" placeholder="Share a profit-making idea...">
+    <button class="btn-main" onclick="saveIdea()">POST IDEA</button>
   </div>
-  
-  <h2>Community Feed</h2>
   <div id="ideasDisplay"></div>
+</div>
+
+<div id="efootball" class="tab-content">
+  <div class="container">
+    <h2>🎮 Squad Management</h2>
+    <input id="playerInput" placeholder="Add First XI Player Name">
+    <input id="subInput" placeholder="Add Substitute Player Name">
+    <button class="btn-main" style="background: var(--efootball);" onclick="saveToSquad()">ADD TO SQUAD</button>
+  </div>
+
+  <div class="container">
+    <h2>📋 Your Current XI</h2>
+    <div class="pitch" id="xiDisplay">No players added yet.</div>
+    
+    <h2 style="margin-top:20px;">🔄 Substitutes</h2>
+    <div class="bench" id="subsDisplay"></div>
+  </div>
 </div>
 
 <div id="stats" class="tab-content">
   <div class="container">
     <h2>🏆 Top Contributors</h2>
-    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">Most active users based on shared ideas.</p>
     <div id="leaderboard"></div>
   </div>
 </div>
 
 <div id="settings" class="tab-content">
   <div class="container">
-    <h2>Account Settings</h2>
+    <h2>Settings</h2>
     <p id="userEmailDisplay"></p>
-    <input id="newPassword" type="password" placeholder="New Password">
-    <button class="btn-main" onclick="changePassword()">Update Password</button>
-    <button class="btn-main btn-danger" onclick="logout()">Log Out</button>
-  </div>
-  
-  <div class="container" style="background: gold; color: black;">
-    <h2>VIP Status</h2>
-    <button onclick="pay()" style="width:100%; border:none; padding:10px; font-weight:bold; cursor:pointer;">ACTIVATE PREMIUM</button>
+    <button class="btn-main" style="background:#444;" onclick="auth.signOut()">LOGOUT</button>
   </div>
 </div>
 
-<div id="authModal" class="tab-content" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000;">
-   <div class="container" style="margin-top: 100px;">
-      <h2>Welcome to the Hub</h2>
-      <input id="regEmail" type="email" placeholder="Email Address">
-      <input id="regPassword" type="password" placeholder="Password">
-      <button class="btn-main" onclick="signup()">SIGN UP</button>
-      <button class="btn-main" style="background:#333" onclick="login()">LOGIN</button>
-   </div>
+<div id="authModal" style="display: none; position: fixed; inset: 0; background: var(--bg); z-index: 2000; padding: 40px 20px;">
+  <div class="container">
+    <h2>Login / Sign Up</h2>
+    <input id="regEmail" type="email" placeholder="Email">
+    <input id="regPassword" type="password" placeholder="Password">
+    <button class="btn-main" onclick="signup()">GET STARTED</button>
+    <button class="btn-main" style="background:#333; margin-top:10px;" onclick="login()">LOGIN</button>
+  </div>
 </div>
 
 <nav class="bottom-nav">
-  <div class="nav-item active" onclick="switchTab('home', this)"><i class="fas fa-home"></i>Home</div>
-  <div class="nav-item" onclick="switchTab('stats', this)"><i class="fas fa-chart-line"></i>Stats</div>
-  <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-cog"></i>Settings</div>
+  <div class="nav-item active" onclick="switchTab('home', this)"><i class="fas fa-coins"></i>Money</div>
+  <div class="nav-item" onclick="switchTab('efootball', this)"><i class="fas fa-running"></i>Squad</div>
+  <div class="nav-item" onclick="switchTab('stats', this)"><i class="fas fa-chart-bar"></i>Stats</div>
+  <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-user"></i>Me</div>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -123,7 +125,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Tab Switching Logic
 function switchTab(tabId, el) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -131,35 +132,56 @@ function switchTab(tabId, el) {
   el.classList.add('active');
 }
 
-// Authentication
-function signup() {
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPassword").value;
-  auth.createUserWithEmailAndPassword(email, password).catch(err => alert(err.message));
-}
-function login() {
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPassword").value;
-  auth.signInWithEmailAndPassword(email, password).catch(err => alert(err.message));
-}
-function logout() { auth.signOut(); }
-
-function changePassword() {
-  const newPass = document.getElementById("newPassword").value;
-  auth.currentUser.updatePassword(newPass).then(() => alert("Password Updated!")).catch(err => alert(err.message));
-}
+// Authentication Logic
+function signup() { auth.createUserWithEmailAndPassword(regEmail.value, regPassword.value); }
+function login() { auth.signInWithEmailAndPassword(regEmail.value, regPassword.value); }
 
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById("authModal").style.display = "none";
-    document.getElementById("topStatus").innerText = "CONNECTED: " + user.email;
-    document.getElementById("userEmailDisplay").innerText = "Account: " + user.email;
+    document.getElementById("topStatus").innerText = "PLAYER: " + user.email;
+    document.getElementById("userEmailDisplay").innerText = user.email;
+    loadSquad(user.uid);
   } else {
     document.getElementById("authModal").style.display = "block";
   }
 });
 
-// Save and Load Ideas
+// SQUAD LOGIC
+function saveToSquad() {
+  const user = auth.currentUser;
+  const pName = document.getElementById("playerInput").value;
+  const sName = document.getElementById("subInput").value;
+  
+  if(pName) {
+    db.collection("squads").add({ uid: user.uid, name: pName, type: 'xi', time: Date.now() });
+    document.getElementById("playerInput").value = "";
+  }
+  if(sName) {
+    db.collection("squads").add({ uid: user.uid, name: sName, type: 'sub', time: Date.now() });
+    document.getElementById("subInput").value = "";
+  }
+}
+
+function loadSquad(uid) {
+  db.collection("squads").where("uid", "==", uid).orderBy("time", "asc").onSnapshot(snap => {
+    const xiBox = document.getElementById("xiDisplay");
+    const subBox = document.getElementById("subsDisplay");
+    xiBox.innerHTML = "";
+    subBox.innerHTML = "";
+    
+    snap.forEach(doc => {
+      const data = doc.data();
+      if(data.type === 'xi') {
+        xiBox.innerHTML += `<div style="display:inline-block; margin:5px;"><i class="fas fa-user-circle fa-2x"></i><span class="player-tag">${data.name}</span></div>`;
+      } else {
+        subBox.innerHTML += `<div class="sub-card">${data.name}</div>`;
+      }
+    });
+  });
+}
+
+// MONEY IDEAS LOGIC
 function saveIdea() {
   const text = document.getElementById("ideaInput").value;
   if (!text) return;
@@ -167,45 +189,25 @@ function saveIdea() {
     text: text,
     userEmail: auth.currentUser.email,
     time: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => { document.getElementById("ideaInput").value = ""; });
+  }).then(() => { ideaInput.value = ""; });
 }
 
 db.collection("ideas").orderBy("time", "desc").onSnapshot(snapshot => {
   const feed = document.getElementById("ideasDisplay");
-  const leaderboard = {};
+  const lbData = {};
   feed.innerHTML = "";
-
   snapshot.forEach(doc => {
-    const data = doc.data();
-    // Update Feed
-    let div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `<strong>${data.text}</strong><br><small style="color:var(--primary)">${data.userEmail}</small>`;
-    feed.appendChild(div);
-
-    // Track for Chart
-    leaderboard[data.userEmail] = (leaderboard[data.userEmail] || 0) + 1;
+    const d = doc.data();
+    feed.innerHTML += `<div class="card"><strong>${d.text}</strong><br><small style="color:var(--primary)">${d.userEmail}</small></div>`;
+    lbData[d.userEmail] = (lbData[d.userEmail] || 0) + 1;
   });
-
-  // Render Leaderboard Chart
-  const chart = document.getElementById("leaderboard");
-  chart.innerHTML = "";
-  const sorted = Object.entries(leaderboard).sort((a,b) => b[1] - a[1]).slice(0, 5);
-  sorted.forEach((user, i) => {
-    chart.innerHTML += `<div class="chart-row"><span class="rank">#${i+1}</span> <span>${user[0]}</span> <span>${user[1]} ideas</span></div>`;
+  
+  const lb = document.getElementById("leaderboard");
+  lb.innerHTML = "";
+  Object.entries(lbData).sort((a,b) => b[1]-a[1]).slice(0,5).forEach(([email, count]) => {
+    lb.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><span>${email}</span><span style="color:var(--accent)">${count}</span></div>`;
   });
 });
-
-function pay() {
-  let handler = PaystackPop.setup({
-    key: 'Pk_test_184b624c480ab512a8ca799ea92fad48d6342b9a',
-    email: auth.currentUser.email,
-    amount: 200000,
-    currency: "NGN",
-    callback: function(res) { alert("Paid! Ref: " + res.reference); }
-  });
-  handler.openIframe();
-}
 </script>
 </body>
 </html>
