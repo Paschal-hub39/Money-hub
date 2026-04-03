@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paschala Hub | Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="logo"><img src="ei_1775215120589-removebg-preview_1~2.png" alt="Logo"><span id="adminGreeting">Hi Admin</span></div>
+  <div class="hamburger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+</header>
+
+<div id="menuOverlay">
+  <a href="#" onclick="showTab('usersTab')">Users</a>
+  <a href="#" onclick="showTab('formationsTab')">Formations</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="container">
+  <!-- Users Tab -->
+  <div id="usersTab" class="tab">
+    <h3>All Users</h3>
+    <ul id="usersList"></ul>
+  </div>
+
+  <!-- Formations Tab -->
+  <div id="formationsTab" class="tab" style="display:none;">
+    <h3>Default Formations</h3>
+    <input type="text" id="formationName" placeholder="e.g., 4-3-3">
+    <button id="addFormationBtn">Add Formation</button>
+    <div id="formationsList"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
+  authDomain: "money-app-bac4c.firebaseapp.com",
+  projectId: "money-app-bac4c",
+  storageBucket: "money-app-bac4c.appspot.com",
+  messagingSenderId: "663419222795",
+  appId: "1:663419222795:web:1ad595d41854f3cc45000e"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* Hamburger Menu */
+function toggleMenu() {
+  const overlay = document.getElementById('menuOverlay');
+  overlay.style.display = overlay.style.display==='flex'?'none':'flex';
+}
+
+/* Tabs */
+function showTab(tabId){
+  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
+  document.getElementById(tabId).style.display='block';
+  toggleMenu();
+}
+
+/* Auth State */
+auth.onAuthStateChanged(async user=>{
+  if(!user) { window.location.href="index.html"; return; }
+
+  const adminDoc = await db.collection("admin").doc(user.uid).get();
+  if(!adminDoc.exists){
+    alert("Access denied: not an admin");
+    window.location.href="index.html";
+    return;
+  }
+  document.getElementById("adminGreeting").innerText = "Hi Admin "+user.email;
+  loadUsers();
+  loadFormations();
+});
+
+/* Load Users */
+async function loadUsers(){
+  const snap = await db.collection("users").get();
+  const list = document.getElementById("usersList");
+  list.innerHTML="";
+  snap.forEach(doc=>{
+    const li = document.createElement("li");
+    li.textContent = doc.id + " — " + (doc.data()?.settings?.name || "No Name");
+    list.appendChild(li);
+  });
+}
+
+/* Formations */
+async function loadFormations(){
+  const snap = await db.collection("formations").get();
+  const list = document.getElementById("formationsList");
+  list.innerHTML="";
+  snap.forEach(doc=>{
+    const div = document.createElement("div");
+    div.innerText = doc.id;
+    list.appendChild(div);
+  });
+}
+
+document.getElementById("addFormationBtn").addEventListener("click", async ()=>{
+  const name = document.getElementById("formationName").value.trim();
+  if(!name) return;
+  await db.collection("formations").doc(name).set({createdAt:new Date()});
+  alert(`Formation "${name}" added.`);
+  loadFormations();
+});
+
+/* Logout */
+function logout(){ auth.signOut(); }
+</script>
+</body>
+</html>
