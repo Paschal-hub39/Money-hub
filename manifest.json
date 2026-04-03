@@ -1,7 +1,8 @@
 {
   "name": "Paschala Hub",
   "short_name": "Paschala",
-  "start_url": "index.html",
+  "description": "eFootball Squad Builder with AI and Drag & Drop",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f0f14",
   "theme_color": "#ff4da6",
