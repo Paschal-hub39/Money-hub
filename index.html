@@ -3,105 +3,409 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paschala Hub | Secure Tactical</title>
+<title>Paschala Hub | Tactical eFootball</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; }
-  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
-  
-  /* Auth Screen */
-  #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .auth-box { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #333; text-align: center; }
+:root {
+  --primary: #ff4da6;
+  --bg: #0f0f14;
+  --card-bg: #1a1a22;
+  --accent: #00ff88;
+  --pitch: #1b5e20;
+  --pos-bg: #ffd700;
+}
 
-  .container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
-  input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
-  .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
-  
-  /* Pitch Layout */
-  .pitch-area { background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
-  .position-row { display: flex; justify-content: center; gap: 12px; width: 100%; min-height: 80px; align-items: center; }
-  .player-card { background: #fff; color: #000; border-radius: 4px; width: 65px; padding: 5px; text-align: center; border-bottom: 4px solid var(--pos-bg); }
-  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; }
-  .p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; }
+body {
+  margin:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color:white;
+  padding-bottom: 90px;
+}
+
+#authOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-box {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 350px;
+  border: 1px solid #333;
+  text-align: center;
+}
+
+.container {
+  background: rgba(26, 26, 34, 0.95);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px;
+  border: 1px solid #333;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #252530;
+  color: white;
+  box-sizing: border-box;
+}
+
+.btn-main {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.pitch-area {
+  background: var(--pitch);
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.position-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 80px;
+  align-items: center;
+  position: relative;
+}
+
+.player-card {
+  background: #fff;
+  color: #000;
+  border-radius: 4px;
+  width: 65px;
+  padding: 5px;
+  text-align: center;
+  border-bottom: 4px solid var(--pos-bg);
+  cursor: grab;
+  position: relative;
+}
+
+.player-card .tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background: var(--card-bg);
+  color: white;
+  font-size: 0.7rem;
+  padding: 5px;
+  border-radius: 5px;
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+  transition: opacity 0.2s;
+}
+
+.player-card:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.ghost {
+  opacity: 0.4;
+  transform: scale(1.05);
+  border: 2px dashed var(--primary);
+}
+
+.substitutes-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* ===== AI VISUAL HIGHLIGHT ===== */
+.highlight-slot {
+  outline: 3px dashed gold;
+  transform: scale(1.1);
+  transition: all 0.2s;
+}
+
+/* ===== SUBSTITUTE RECOMMENDATION HIGHLIGHT ===== */
+.sub-recommend {
+  outline: 3px dashed cyan;
+  transform: scale(1.1);
+  transition: all 0.2s;
+}
 </style>
 </head>
 <body>
 
+<!-- AUTH SCREEN -->
 <div id="authOverlay">
   <div class="auth-box">
     <h1 style="color:var(--primary);">Paschala Hub</h1>
     <p id="authMsg" style="color:#888; font-size:0.85rem;">Enter your Gmail to receive a login link</p>
-    <input id="email" type="email" placeholder="paschalkamsi9@gmail.com">
+    <input id="email" type="email" placeholder="youremail@gmail.com">
     <button class="btn-main" onclick="sendLoginLink()">SEND LOGIN LINK</button>
     <p id="authError" style="color:#ff4d4d; font-size:0.75rem; margin-top:15px;"></p>
   </div>
 </div>
 
+<!-- APP CONTENT -->
 <div id="appContent" style="display:none;">
   <div class="container">
     <div class="pitch-area" id="pitch"></div>
+    <div class="substitutes-row" id="subs"></div>
+    <button id="buyPremium" class="btn-main">Unlock Premium Features</button>
   </div>
-  </div>
+</div>
 
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyC60kQZtBM8iIDh46UX577t4YdnujU6kgs",
   authDomain: "money-app-bac4c.firebaseapp.com",
   projectId: "money-app-bac4c",
-  storageBucket: "money-app-bac4c.firebasestorage.app",
+  storageBucket: "money-app-bac4c.appspot.com",
   messagingSenderId: "663419222795",
   appId: "1:663419222795:web:1ad595d41854f3cc45000e"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
-// 1. SEND REAL EMAIL LINK
-async function sendLoginLink() {
-  const emailInput = document.getElementById("email").value.trim();
-  const actionCodeSettings = {
-    url: window.location.href, // This brings the user back to your app
-    handleCodeInApp: true,
-  };
+// PLAYERS DATA
+let starters = [
+  {name:"Player1", position:"GK", rating:101, matchesPlayed:50, stamina:90, role:"Keeper", preferredFoot:"Right"},
+  {name:"Player2", position:"LB", rating:95, matchesPlayed:80, stamina:85, role:"Defender", preferredFoot:"Left"},
+  {name:"Player3", position:"CB", rating:100, matchesPlayed:120, stamina:92, role:"Defender", preferredFoot:"Right"},
+  {name:"Player4", position:"CB", rating:99, matchesPlayed:100, stamina:91, role:"Defender", preferredFoot:"Right"},
+  {name:"Player5", position:"RB", rating:98, matchesPlayed:90, stamina:88, role:"Defender", preferredFoot:"Right"},
+  {name:"Player6", position:"CMF", rating:102, matchesPlayed:110, stamina:95, role:"Box-to-Box", preferredFoot:"Right"},
+  {name:"Player7", position:"CMF", rating:100, matchesPlayed:105, stamina:93, role:"Playmaker", preferredFoot:"Left"},
+  {name:"Player8", position:"CMF", rating:101, matchesPlayed:115, stamina:92, role:"Defensive", preferredFoot:"Right"},
+  {name:"Player9", position:"LW", rating:103, matchesPlayed:95, stamina:96, role:"Winger", preferredFoot:"Left"},
+  {name:"Player10", position:"CF", rating:105, matchesPlayed:100, stamina:97, role:"Striker", preferredFoot:"Right"},
+  {name:"Player11", position:"RW", rating:104, matchesPlayed:90, stamina:94, role:"Winger", preferredFoot:"Right"}
+];
 
-  try {
-    await auth.sendSignInLinkToEmail(emailInput, actionCodeSettings);
-    window.localStorage.setItem('emailForSignIn', emailInput);
-    document.getElementById("authMsg").innerText = "Check your Gmail! We sent a login link.";
-    document.getElementById("email").style.display = "none";
-  } catch (error) {
-    document.getElementById("authError").innerText = error.message;
+let substitutes = [
+  {name:"Sub1", position:"GK", rating:92, matchesPlayed:30, stamina:85, role:"Keeper", preferredFoot:"Right"},
+  {name:"Sub2", position:"CB", rating:95, matchesPlayed:50, stamina:88, role:"Defender", preferredFoot:"Right"},
+  {name:"Sub3", position:"CMF", rating:98, matchesPlayed:40, stamina:90, role:"Box-to-Box", preferredFoot:"Right"},
+  {name:"Sub4", position:"CF", rating:100, matchesPlayed:60, stamina:92, role:"Striker", preferredFoot:"Left"},
+  {name:"Sub5", position:"RW", rating:97, matchesPlayed:45, stamina:90, role:"Winger", preferredFoot:"Right"}
+];
+
+// HELPER FUNCTIONS
+function createPlayerCard(player){
+  const card = document.createElement('div');
+  card.className = 'player-card';
+  card.innerHTML = `
+    <span class="pos-label">${player.position}</span>
+    <span class="p-name">${player.name}</span>
+    <div class="tooltip">
+      Rating: ${player.rating}<br>
+      Matches: ${player.matchesPlayed}<br>
+      Stamina: ${player.stamina}<br>
+      Role: ${player.role}<br>
+      Foot: ${player.preferredFoot}
+    </div>
+  `;
+  if(player.rating>100) card.style.borderBottom='4px solid gold';
+  else if(player.rating>90) card.style.borderBottom='4px solid lightgreen';
+  else card.style.borderBottom='4px solid yellow';
+  return card;
+}
+
+function renderPitch(){
+  const pitch = document.getElementById('pitch');
+  pitch.innerHTML='';
+  const formation = [
+    starters.slice(0,1),
+    starters.slice(1,5),
+    starters.slice(5,8),
+    starters.slice(8,11)
+  ];
+  formation.forEach(row=>{
+    const rowDiv = document.createElement('div');
+    rowDiv.className='position-row';
+    row.forEach(player=>{
+      rowDiv.appendChild(createPlayerCard(player));
+    });
+    pitch.appendChild(rowDiv);
+  });
+
+  const subsRow = document.getElementById('subs');
+  subsRow.innerHTML='';
+  substitutes.forEach(player=>subsRow.appendChild(createPlayerCard(player)));
+}
+
+// ===== UPDATE FORMATION & AI HIGHLIGHTS =====
+function updateFormation(){
+  const pitchCards = document.querySelectorAll('.position-row .player-card');
+  starters = Array.from(pitchCards).map(card=>{
+    const name = card.querySelector('.p-name').textContent;
+    return [...starters,...substitutes].find(p=>p.name===name);
+  });
+  highlightSubstitute(); // update sub recommendation automatically
+}
+
+// ===== BEST POSITION HIGHLIGHT =====
+function clearHighlights() {
+  document.querySelectorAll('.player-card').forEach(card=>{
+    card.classList.remove('highlight-slot');
+  });
+}
+
+function highlightBestPosition(playerName) {
+  clearHighlights();
+  const allPlayers = [...document.querySelectorAll('.position-row .player-card')];
+  const playerData = [...starters, ...substitutes].find(p=>p.name === playerName);
+  if(!playerData) return;
+
+  let bestCard = allPlayers.find(c=>{
+    const pos = c.querySelector('.pos-label').textContent;
+    return pos === playerData.position;
+  });
+
+  if(!bestCard){
+    bestCard = allPlayers.reduce((lowest, c)=>{
+      const rating = [...starters,...substitutes].find(p=>p.name===c.querySelector('.p-name').textContent).rating;
+      const lowestRating = [...starters,...substitutes].find(p=>p.name===lowest.querySelector('.p-name').textContent).rating;
+      return rating < lowestRating ? c : lowest;
+    }, allPlayers[0]);
+  }
+
+  if(bestCard) bestCard.classList.add('highlight-slot');
+}
+
+// ===== SUBSTITUTE RECOMMENDATION =====
+function clearSubRecommendations() {
+  document.querySelectorAll('.player-card').forEach(card=>{
+    card.classList.remove('sub-recommend');
+  });
+}
+
+function highlightSubstitute() {
+  clearSubRecommendations();
+
+  const weakestStarter = starters.reduce((lowest, player) => player.rating < lowest.rating ? player : lowest, starters[0]);
+
+  const bestSub = substitutes.filter(sub=>sub.rating > weakestStarter.rating)
+                             .find(sub=>sub.position === weakestStarter.position);
+
+  if(bestSub){
+    const subCard = [...document.querySelectorAll('#subs .player-card')]
+                    .find(card => card.querySelector('.p-name').textContent === bestSub.name);
+    if(subCard) subCard.classList.add('sub-recommend');
+
+    const starterCard = [...document.querySelectorAll('.position-row .player-card')]
+                        .find(card => card.querySelector('.p-name').textContent === weakestStarter.name);
+    if(starterCard) starterCard.classList.add('sub-recommend');
   }
 }
 
-// 2. CHECK IF USER IS RETURNING FROM EMAIL LINK
-async function completeSignIn() {
-  if (auth.isSignInWithEmailLink(window.location.href)) {
+// ===== FIREBASE LOGIN =====
+async function sendLoginLink(){
+  const emailInput = document.getElementById("email").value.trim();
+  const actionCodeSettings = {url: window.location.href, handleCodeInApp:true};
+  try{
+    await auth.sendSignInLinkToEmail(emailInput,actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn',emailInput);
+    document.getElementById("authMsg").innerText="Check your Gmail! We sent a login link.";
+    document.getElementById("email").style.display="none";
+  }catch(error){document.getElementById("authError").innerText=error.message;}
+}
+
+async function completeSignIn(){
+  if(auth.isSignInWithEmailLink(window.location.href)){
     let email = window.localStorage.getItem('emailForSignIn');
-    if (!email) {
-      email = window.prompt('Please provide your email for confirmation');
-    }
-    try {
+    if(!email) email=window.prompt('Please provide your email');
+    try{
       await auth.signInWithEmailLink(email, window.location.href);
       window.localStorage.removeItem('emailForSignIn');
-    } catch (error) {
-      alert(error.message);
-    }
+    }catch(e){alert(e.message);}
   }
 }
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("authOverlay").style.display = "none";
-    document.getElementById("appContent").style.display = "block";
-    // renderPitch();
-  } else {
-    completeSignIn();
-  }
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("authOverlay").style.display="none";
+    document.getElementById("appContent").style.display="block";
+    renderPitch();
+    attachSortable(); // initialize drag & drop + AI
+    highlightSubstitute(); // suggest initial sub
+  } else { completeSignIn(); }
 });
+
+// ===== PAYSTACK =====
+const paystackPublicKey = "YOUR_PK_HERE";
+document.getElementById('buyPremium').addEventListener('click',()=>{
+  const user = auth.currentUser;
+  if(!user) return alert("Login first");
+  let handler = PaystackPop.setup({
+    key: paystackPublicKey,
+    email: user.email,
+    amount: 1000*100,
+    currency:"NGN",
+    ref:''+Math.floor(Math.random()*1000000000+1),
+    callback:function(res){
+      alert('Payment complete! Reference: '+res.reference);
+      document.body.classList.add('premium');
+    },
+    onClose:function(){alert('Transaction closed.');}
+  });
+  handler.openIframe();
+});
+
+// ===== SORTABLE + AI HIGHLIGHTS + SUB RECOMMEND =====
+function attachSortable(){
+  document.querySelectorAll('.position-row, #subs').forEach(row=>{
+    if(!row._aiSortableAttached){
+      Sortable.create(row, {
+        group: 'players',
+        animation: 150,
+        ghostClass: 'ghost',
+        onStart: function(evt){
+          const playerName = evt.item.querySelector('.p-name').textContent;
+          highlightBestPosition(playerName);
+        },
+        onEnd: function(evt){
+          updateFormation();
+        }
+      });
+      row._aiSortableAttached = true;
+    }
+  });
+}
 </script>
 </body>
 </html>
