@@ -1,0 +1,20 @@
+{
+  "name": "Money Ideas Hub",
+  "short_name": "MoneyHub",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0f14",
+  "theme_color": "#ff4da6",
+  "icons": [
+    {
+      "src": "icons/ei_1775215120589-removebg-preview_1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/ei_1775215120589-removebg-preview_2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
