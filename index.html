@@ -3,133 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paschala Hub | Tactical AI & Profit</title>
+<title>Paschala Hub | Secure Tactical</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; --form-a: #00e5ff; }
-  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; overflow-x: hidden; }
+  :root { --primary: #ff4da6; --bg: #0f0f14; --card-bg: #1a1a22; --accent: #00ff88; --pitch: #1b5e20; --pos-bg: #ffd700; }
+  body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color:white; padding-bottom: 90px; }
   
   /* Auth Screen */
   #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .auth-box { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #333; text-align: center; }
 
-  /* Pitch & Player Cards */
-  .pitch-area { 
-    background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; 
-    height: 480px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 47px, rgba(255,255,255,0.03) 48px);
-  }
-  .position-row { display: flex; justify-content: center; gap: 12px; width: 100%; min-height: 85px; align-items: center; }
-  
-  .player-card { 
-    background: #fff; color: #000; border-radius: 4px; width: 68px; padding: 5px;
-    text-align: center; cursor: pointer; border-bottom: 4px solid var(--pos-bg); position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.2s;
-  }
-  .player-card:active { transform: scale(1.1); }
-  .condition-dot { position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; }
-  
-  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; }
-  .p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; }
-
-  /* UI Elements */
   .container { background: rgba(26, 26, 34, 0.95); padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #333; }
-  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; align-items: center; justify-content: center; padding: 20px; }
-  .modal-content { background: var(--card-bg); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid var(--primary); text-align: center; }
-
-  input, select { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
+  input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #444; background: #252530; color: white; box-sizing: border-box; }
   .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
   
-  .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #16161d; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 1000; }
-  .nav-item { color: #888; text-align: center; font-size: 0.75rem; cursor: pointer; }
-  .nav-item.active { color: var(--primary); }
+  /* Pitch Layout */
+  .pitch-area { background: var(--pitch); border: 3px solid rgba(255,255,255,0.3); border-radius: 10px; height: 450px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
+  .position-row { display: flex; justify-content: center; gap: 12px; width: 100%; min-height: 80px; align-items: center; }
+  .player-card { background: #fff; color: #000; border-radius: 4px; width: 65px; padding: 5px; text-align: center; border-bottom: 4px solid var(--pos-bg); }
+  .pos-label { background: #000; color: var(--pos-bg); font-size: 0.6rem; font-weight: bold; display: block; }
+  .p-name { font-size: 0.65rem; font-weight: bold; display: block; margin-top: 2px; }
 </style>
 </head>
 <body>
 
 <div id="authOverlay">
   <div class="auth-box">
-    <h1 style="color:var(--primary); margin:0;">Paschala Hub</h1>
-    <div id="authStep1">
-      <p style="color:#888; font-size:0.85rem;">Enter details to sync your Lille squad</p>
-      <input id="email" type="email" placeholder="Email Address">
-      <input id="pass" type="password" placeholder="Password">
-      <button class="btn-main" onclick="sendVerificationCode()">GET ACCESS CODE</button>
-    </div>
-    <div id="authStep2" style="display:none;">
-      <p style="color:var(--accent);">Verification code sent to your email!</p>
-      <input id="vCode" type="text" placeholder="6-Digit Code">
-      <button class="btn-main" onclick="finalizeAuth()">VERIFY & START</button>
-    </div>
-    <p id="authError" style="color:red; font-size:0.75rem; margin-top:10px;"></p>
+    <h1 style="color:var(--primary);">Paschala Hub</h1>
+    <p id="authMsg" style="color:#888; font-size:0.85rem;">Enter your Gmail to receive a login link</p>
+    <input id="email" type="email" placeholder="paschalkamsi9@gmail.com">
+    <button class="btn-main" onclick="sendLoginLink()">SEND LOGIN LINK</button>
+    <p id="authError" style="color:#ff4d4d; font-size:0.75rem; margin-top:15px;"></p>
   </div>
 </div>
 
-<div id="statModal" class="modal" onclick="this.style.display='none'">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <h2 id="mName" style="color:var(--primary); margin:0;">Player Stats</h2>
-    <div style="display:flex; justify-content:space-around; margin:20px 0;">
-      <div><h1 id="mG" style="color:var(--accent); margin:0;">0</h1><p>Goals</p></div>
-      <div><h1 id="mA" style="color:var(--accent); margin:0;">0</h1><p>Assists</p></div>
-    </div>
-    <div id="mAdvice" style="background:#000; padding:15px; border-radius:10px; font-size:0.85rem; border-left:4px solid var(--accent); margin-bottom:15px;"></div>
-    <button class="btn-main" onclick="document.getElementById('statModal').style.display='none'">CLOSE</button>
-  </div>
-</div>
-
-<div id="squadTab" class="tab-content">
+<div id="appContent" style="display:none;">
   <div class="container">
-    <select id="formSelect" onchange="renderPitch()">
-      <option value="4-3-1-2">4-3-1-2 (Diamond - G. Zeitzler)</option>
-      <option value="4-2-1-3">4-2-1-3 (Offensive - Xabi Alonso)</option>
-      <option value="4-2-2-2">4-2-2-2 (Counter - Fabio Capello)</option>
-    </select>
     <div class="pitch-area" id="pitch"></div>
   </div>
-
-  <div class="container">
-    <h3><i class="fas fa-plus-circle"></i> Register Player</h3>
-    <input id="pName" placeholder="Name (e.g. Batistuta)">
-    <div style="display:flex; gap:10px;">
-      <input id="pG" type="number" placeholder="Goals">
-      <input id="pA" type="number" placeholder="Assists">
-    </div>
-    <div style="display:flex; gap:10px; margin-bottom:10px;">
-      <select id="pPos" style="margin:0;">
-        <option value="CF">CF</option><option value="SS">SS</option><option value="AMF">AMF</option>
-        <option value="LWF">LWF</option><option value="RWF">RWF</option><option value="CMF">CMF</option>
-        <option value="DMF">DMF</option><option value="CB">CB</option><option value="GK">GK</option>
-        <option value="SUB">BENCH</option>
-      </select>
-      <select id="pCond" style="margin:0; background: #1b5e20;">
-        <option value="#00ff88">Form A (Blue)</option>
-        <option value="#ffd700">Form B (Green)</option>
-        <option value="#ff4d4d">Form D (Red)</option>
-      </select>
-    </div>
-    <button class="btn-main" onclick="savePlayer()">SAVE TO SQUAD</button>
   </div>
-
-  <div class="container" id="benchSection" style="display:none;">
-    <h3>🔄 Bench & Reserves</h3>
-    <div id="benchList" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
-  </div>
-</div>
-
-<div id="moneyTab" class="tab-content" style="display:none;">
-  <div class="container">
-    <h2>💸 Profit Strategies</h2>
-    <input id="ideaInput" placeholder="Post a new money idea...">
-    <button class="btn-main" onclick="saveIdea()">POST TO FEED</button>
-  </div>
-  <div id="ideasDisplay"></div>
-</div>
-
-<nav class="bottom-nav">
-  <div class="nav-item active" id="navSquad" onclick="switchTab('squadTab')"><i class="fas fa-tshirt fa-lg"></i><br>Squad</div>
-  <div class="nav-item" id="navMoney" onclick="switchTab('moneyTab')"><i class="fas fa-wallet fa-lg"></i><br>Money</div>
-  <div class="nav-item" onclick="auth.signOut()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Logout</div>
-</nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -146,113 +58,50 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
 
-// --- AUTHENTICATION ---
-function sendVerificationCode() {
-  const email = document.getElementById("email").value.trim(); // TRIM TO FIX FORMAT ERROR
-  if(!email.includes("@")) return alert("Invalid Email!");
-  document.getElementById("authStep1").style.display = "none";
-  document.getElementById("authStep2").style.display = "block";
+// 1. SEND REAL EMAIL LINK
+async function sendLoginLink() {
+  const emailInput = document.getElementById("email").value.trim();
+  const actionCodeSettings = {
+    url: window.location.href, // This brings the user back to your app
+    handleCodeInApp: true,
+  };
+
+  try {
+    await auth.sendSignInLinkToEmail(emailInput, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', emailInput);
+    document.getElementById("authMsg").innerText = "Check your Gmail! We sent a login link.";
+    document.getElementById("email").style.display = "none";
+  } catch (error) {
+    document.getElementById("authError").innerText = error.message;
+  }
 }
 
-async function finalizeAuth() {
-  const e = document.getElementById("email").value.trim();
-  const p = document.getElementById("pass").value;
-  try {
-    try { await auth.signInWithEmailAndPassword(e, p); }
-    catch { await auth.createUserWithEmailAndPassword(e, p); }
-  } catch(err) { document.getElementById("authError").innerText = err.message; }
+// 2. CHECK IF USER IS RETURNING FROM EMAIL LINK
+async function completeSignIn() {
+  if (auth.isSignInWithEmailLink(window.location.href)) {
+    let email = window.localStorage.getItem('emailForSignIn');
+    if (!email) {
+      email = window.prompt('Please provide your email for confirmation');
+    }
+    try {
+      await auth.signInWithEmailLink(email, window.location.href);
+      window.localStorage.removeItem('emailForSignIn');
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 }
 
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById("authOverlay").style.display = "none";
-    document.getElementById("squadTab").style.display = "block";
-    renderPitch(); loadIdeas();
+    document.getElementById("appContent").style.display = "block";
+    // renderPitch();
   } else {
-    document.getElementById("authOverlay").style.display = "flex";
+    completeSignIn();
   }
 });
-
-// --- SQUAD LOGIC ---
-async function savePlayer() {
-  const name = document.getElementById("pName").value;
-  const pos = document.getElementById("pPos").value;
-  const g = document.getElementById("pG").value || 0;
-  const a = document.getElementById("pA").value || 0;
-  const cond = document.getElementById("pCond").value;
-  if(!name) return;
-  await db.collection("squads").add({ uid: auth.currentUser.uid, name, pos, g, a, cond, time: Date.now() });
-  document.getElementById("pName").value = "";
-}
-
-function showStats(p) {
-  document.getElementById("mName").innerText = p.name;
-  document.getElementById("mG").innerText = p.g;
-  document.getElementById("mA").innerText = p.a;
-  
-  const tips = {
-    "CF": "Target Man mode enabled. Great for Batistuta in 4-3-1-2.",
-    "LWF": "Prolific Winger role. Best paired with Xabi Alonso.",
-    "SUB": "Super-sub boost! Bring on after 70 mins for +10% stats."
-  };
-  document.getElementById("mAdvice").innerText = "AI ADVICE: " + (tips[p.pos] || "Strong tactical choice for " + p.pos);
-  document.getElementById("statModal").style.display = "flex";
-}
-
-function renderPitch() {
-  db.collection("squads").where("uid", "==", auth.currentUser.uid).onSnapshot(snap => {
-    const pitch = document.getElementById("pitch");
-    const bench = document.getElementById("benchList");
-    pitch.innerHTML = ""; bench.innerHTML = "";
-    const rows = { atk: ["CF", "SS", "LWF", "RWF"], mid: ["AMF", "CMF", "DMF"], def: ["CB", "LB", "RB"], gk: ["GK"] };
-
-    Object.keys(rows).forEach(key => {
-      let rowDiv = document.createElement("div"); rowDiv.className = "position-row";
-      snap.forEach(doc => {
-        const d = doc.data();
-        const cardHTML = `<div class="player-card" onclick='showStats(${JSON.stringify(d)})'>
-          <div class="condition-dot" style="background:${d.cond}"></div>
-          <span class="pos-label">${d.pos}</span><span class="p-name">${d.name}</span></div>`;
-        
-        if(rows[key].includes(d.pos)) rowDiv.innerHTML += cardHTML;
-        if(d.pos === "SUB") {
-          document.getElementById("benchSection").style.display = "block";
-          bench.innerHTML += `<div class="container" style="margin:0; padding:10px; border-left:4px solid ${d.cond}" onclick='showStats(${JSON.stringify(d)})'>
-            <strong>${d.name}</strong><br><small>G/A: ${d.g}/${d.a}</small></div>`;
-        }
-      });
-      pitch.appendChild(rowDiv);
-    });
-  });
-}
-
-// --- MONEY & TABS ---
-function saveIdea() {
-  const text = document.getElementById("ideaInput").value;
-  db.collection("ideas").add({ text, user: auth.currentUser.email, time: Date.now() });
-  document.getElementById("ideaInput").value = "";
-}
-
-function loadIdeas() {
-  db.collection("ideas").orderBy("time", "desc").onSnapshot(snap => {
-    const feed = document.getElementById("ideasDisplay");
-    feed.innerHTML = "";
-    snap.forEach(doc => {
-      const d = doc.data();
-      feed.innerHTML += `<div class="container"><strong>${d.text}</strong><br><small style="color:var(--primary)">${d.user}</small></div>`;
-    });
-  });
-}
-
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(tabId).style.display = 'block';
-  if(tabId === 'squadTab') document.getElementById('navSquad').classList.add('active');
-  else document.getElementById('navMoney').classList.add('active');
-}
 </script>
 </body>
 </html>
